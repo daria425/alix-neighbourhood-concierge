@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "alix-neighbourhood-concierge"
+version = "0.1.0"
+description = ""
+authors = ["daria425 <darianaumova5@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+google-cloud-aiplatform = ">=1.64"
+requests = "^2.32.3"
+black = "^24.10.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
