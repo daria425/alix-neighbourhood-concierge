@@ -13,16 +13,32 @@ class Search(ABC):
             raise ValueError("Subclasses must define a `base_url` attribute.")
         self.api_key=api_key
         
-    def run_search(self, url:str, kwargs):
+    def run_search(self, request_config:dict, kwargs:dict=None):
         """
         Executes a search request.
         
-        :param url: The URL to send the request to.
-        :param kwargs: Optional parameters for the request, e.g., headers, params, etc.
-        """
-        # Pass optional parameters to the requests.get method
+        Args:
+        ------
+        request_config (dict): Configuration for the request, including method and URL.
+            Example:
+            {
+                "method": "GET" or "POST",
+                "url": "https://example.com/api"
+            }
+        kwargs (dict, optional): Additional parameters for the request, such as headers, 
+            query parameters, or request body. E.g., {'json': {}, 'headers': {}}.
+
+        Returns:
+        --------
+        dict: The response in JSON format, or an error message if an exception occurs.
+        """        
+        if kwargs is None:
+            kwargs = {}
         try:
-            response = requests.get(url, **kwargs)
+            if request_config["method"]=="GET":
+                response = requests.get(request_config["url"], **kwargs)
+            else:
+                response=requests.post(request_config["url"], json=request_config.get("request_body", {}),**kwargs)
             return response.json()
         except requests.exceptions.HTTPError as http_err:
             return {"error": f"HTTP error occurred: {http_err}", "status_code": response.status_code}
@@ -31,12 +47,12 @@ class Search(ABC):
         except Exception as err:
             return {"error": f"An unexpected error occurred: {err}"}
     @abstractmethod
-    def create_search_url(self, query: str):
+    def create_search_request(self, query: str):
         """
-        Creates a search url to use with a search API, including the API key
+        Creates a search request to use with a search API, including the API key
 
         """
-        raise NotImplementedError("Subclasses must implement the `create_model` method")
+        raise NotImplementedError("Subclasses must implement the `create_search_request` method")
     
 
 class SERPSearch(Search):
@@ -45,7 +61,7 @@ class SERPSearch(Search):
     """
     base_url= "https://serpapi.com/search"
     
-    def create_search_url(self, query: str, params: dict=None):
+    def create_search_request(self, query: str, params: dict=None):
         """
         Creates a search URL for the SERP API, adding additional parameters if they are provided.
         
@@ -62,36 +78,54 @@ class SERPSearch(Search):
         url=f"{self.base_url}?api_key={self.api_key}&q={query}"
         if params:
             for key, value in params.items():
-                if value is not None:  # Only add parameters with non-None values
+                if value is not None: 
                     url += f"&{key}={value}"
         
-        return url
+        return {"method": "GET", "url":url}
     
 class TavilySearch(Search):
     """
     A concrete implementation of the Search class for the Tavily API.
     """
     base_url="https://api.tavily.com/search"
-    def create_search_url(self, query: str, params: dict=None):
+    def create_search_request(self, query: str, params: dict=None):
         """
-        Creates a search URL for the Tavily API, adding additional parameters if they are provided.
-        
+        Creates a search request configuration for the Tavily API, including the URL, HTTP method, 
+        and request body with optional additional parameters.
+
         Args:
         --------
-            query: The search query.
-            params: Additional query parameters (optional).
-        
+            query (str): The search query to be included in the request body.
+            params (dict, optional): Additional query parameters to be added to the request body. 
+                Defaults to None.
+
         Returns:
         --------
-        str: A complete URL with query parameters.
+            dict: A dictionary containing the request configuration with the following keys:
+                - "method" (str): The HTTP method for the request ("POST").
+                - "url" (str): The base URL for the API endpoint.
+                - "request_body" (dict): The request body, including the query, API key, and 
+                any additional parameters.
+                
+            Example:
+            --------
+            {
+                "method": "POST",
+                "url": "https://api.tavily.com/search",
+                "request_body": {
+                    "query": "example search",
+                    "api_key": "your_api_key",
+                    "additional_param": "value"
+                }
+            }
         """
-        url=f"{self.base_url}?api_key={self.api_key}&query={query}"
-        if params:
-            for key, value in params.items():
-                if value is not None:  # Only add parameters with non-None values
-                    url += f"&{key}={value}"
-        
-        return url
-
+        request_body = {
+            "query": query,
+            "api_key": self.api_key,
+            **(params or {})  # Merge params if provided, otherwise default to an empty dict
+        }
+        return {
+            "method": "POST", "url":self.base_url, "request_body":request_body
+        }
 
     
