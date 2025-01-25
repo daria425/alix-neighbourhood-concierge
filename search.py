@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
 import requests
-from utils import get_search_api_keys
+from typing import List
+from concurrent.futures import ThreadPoolExecutor
+
 class Search(ABC):
     base_url: str # Class attribute
     """
-    Abstract base class for cinteracting with web search APIs.
+    Abstract base class for interacting with web search APIs.
 
     This class defines the interface for getting a response from a search API provider.
     """
@@ -50,10 +52,96 @@ class Search(ABC):
     def create_search_request(self, query: str):
         """
         Creates a search request to use with a search API, including the API key
-
         """
         raise NotImplementedError("Subclasses must implement the `create_search_request` method")
+
+class HTMLSearch(ABC):
+    """
+    Abstract base class for getting HTML content of event listing websites
+    """
+    base_url: str
+
+    def run_search(self, url, kwargs):
+        if kwargs is None:
+            kwargs = {}
+        try:
+            response=requests.get(url, **kwargs)
+            response.raise_for_status()
+            return response.text
+        except requests.exceptions.HTTPError as http_err:
+            return {"error": f"HTTP error occurred: {http_err}", "status_code": response.status_code}
+        except requests.exceptions.RequestException as req_err:
+            return {"error": f"Request error occurred: {req_err}"}
+        except Exception as err:
+            return {"error": f"An unexpected error occurred: {err}"}
+    @abstractmethod
+    def create_request_url(self, postcode: str):
+        """
+        Creates a search request url to scrape (for event listing websites)
+        """
+        raise NotImplementedError("Subclasses must implement the `create_search_url` method")
     
+class WhereCanWeGoSearch(HTMLSearch):
+    """
+    A concrete implementation of the HTMLSearch class for the WhereCanWeGo website.
+    """
+    base_url="https://www.wherecanwego.com/whats-on/"
+    def create_request_url(self, postcode:str, params:dict=None):
+        """
+        Creates a search URL for scraping a WhereCanWeGo webpage for a given postcode, adding additional parameters if they are provided.
+        
+        Args:
+        --------
+            postcode: The postcode to search for.
+            params: Additional query parameters (optional).
+        
+        Returns:
+        --------
+        str: A complete URL with query parameters.
+        
+        """
+
+        url=f"{self.base_url}{postcode}?id=7" #default to weekly events for now
+        if params:
+            for key, value in params.items():
+                if value is not None: 
+                    url += f"&{key}={value}"
+
+    def _fetch_event(self,event):
+        """
+        Fetches HTML content for an individual event.
+
+        Args:
+        ------
+            event (dict): A dictionary containing event metadata, including a `more_info_url`.
+
+        Returns:
+        --------
+        dict: The response from the `more_info_url` or an error message.
+        """
+        url=event.get("more_info_url")
+        if url:
+            return self.run_search(url, kwargs={})
+        return {"error": "No URL provided"}
+    
+    def fetch_event_details(self, event_metadata:List[dict]):
+        """
+        Fetches detailed HTML content for a list of events concurrently.
+
+        Args:
+        ------
+            event_metadata (List[dict]): A list of dictionaries containing event metadata.
+
+        Returns:
+        --------
+        List[dict]: A list of responses from the `more_info_url` of the events.
+        """
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self._fetch_event, event) for event in event_metadata]
+            return [future.result() for future in futures]
+
+
+        
 
 class SERPSearch(Search):
     """

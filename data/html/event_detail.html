@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+
+<html lang="en-gb">
+
+<head>
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-K705P5RYL9"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-K705P5RYL9');
+
+	</script>
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://www.wherecanwego.com/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+			font-family: 'Open Sans', sans-serif;
+		}
+
+		body {
+			background-color: whitesmoke;
+		}
+
+		/* STRUCTURE */
+
+		#pagewrap {
+			padding: 0;
+			width: 850px;
+			margin: 0 auto;
+		}
+
+		header {
+			/*  min-height: 100px;*/
+			padding: 0 0px;
+		}
+
+
+
+		#middle {
+			margin: 0px 55px 20px 85px;
+		}
+
+
+
+		div.bottommargin {
+			height: 0px;
+		}
+
+
+
+		.showvenue {
+			display: block;
+		}
+
+		div.venueline {
+			margin: 5px 10px 5px 10px;
+			color: #4f4f4f;
+			font-size: 16px;
+		}
+
+		div.otherlines {
+			margin: 10px 10px 5px 10px;
+			color: #4f4f4f;
+			font-size: 16px;
+		}
+
+		#map_canvas {
+			margin: 10px 0 0 5px;
+			height: 250px;
+			width: 500px;
+			display: inline-block;
+			border: 1px solid gray;
+		}
+
+		br {
+			content: "";
+			margin: 2em;
+			display: block;
+			font-size: 15%;
+		}
+
+		h1 {
+			margin: 0px 10px 10px 5px;
+			font-weight: bold;
+			font-size: 17px;
+			color: #4f4f4f;
+		}
+
+		h2 {
+			margin: 0px 10px 0px 10px;
+			font-size: 15px;
+			color: #4f4f4f;
+		}
+
+		div.spacing {
+			padding: 5px;
+			margin-bottom: 10px;
+			background-color: #FFFFFF;
+		}
+
+		.phonenote {
+			margin-left: 25px;
+		}
+
+		.evBack {
+			margin: 10px 0 0 5px;
+		}
+
+		.Flash {
+			color: #d00000;
+			font-weight: bold;
+			font-size: 17px;
+			font-style: italic;
+			margin: 0 0 0 5px;
+		}
+
+		span#lblContactPhoneNote {
+			font-size: 12px;
+		}
+
+
+		img#EventThumbnail {
+			height: 110px;
+			max-width: 200px;
+			border-radius: 8px;
+			border: 1px solid #4786b9;
+		}
+
+		img#EventImage2 {
+			width: 250px;
+			margin: 10px;
+		}
+
+		.EventThumbnail {
+			height: 80px;
+			float: left;
+			margin: 5px 5px 5px 5px;
+			border-radius: 8px;
+			display: inline-block;
+		}
+
+
+		div.PanelOrganisation {
+			padding: 10px 10px 10px 10px;
+			color: #136f63;
+			font-weight: normal;
+			font-size: 14px;
+		}
+
+		div#mapPanel {
+			margin: 0px 10px 10px 5px;
+		}
+
+		a.nearbylink:ACTIVE,
+		a.nearbylink:LINK,
+		a.nearbylink:VISITED {
+			font-weight: bold;
+			color: #d00000;
+			text-decoration: underline;
+		}
+
+		a.nearbylink:HOVER {
+			color: orange;
+		}
+
+		#sharethis {
+			text-align: left;
+			margin: 0px 0px 0px 10px;
+			color: #376b95;
+		}
+
+
+		p.topbyline {
+			color: rgb(43, 54, 137);
+			display: inline-block;
+			font-size: 14px;
+			padding: 10px 40px 10px 10px;
+			font-weight: bold;
+		}
+
+		div#PanelPastEventHeading {
+			margin: 5px 0 20px 0;
+			font-size: 20px;
+			font-weight: bold;
+			color: #d00000;
+			text-align: center;
+		}
+
+
+		div#PanelPastEventHeading2 {
+			margin: 5px 0 20px 0;
+			font-size: 20px;
+			font-weight: bold;
+			color: #d00000;
+			text-align: center;
+		}
+
+
+
+		/************************************************************************************
+MEDIA QUERIES
+*************************************************************************************/
+		/* for 850px or less */
+		@media screen and (max-width: 950px) {
+			#pagewrap {
+				width: 100%;
+				margin: 5px 0px;
+			}
+
+
+			#middle {
+				margin: 0px 0px 5px 0px;
+			}
+
+
+
+			header {
+				padding: 0;
+			}
+
+			img#EventThumbnail {
+				display: block;
+				width: 95%;
+				margin: 0;
+				border-radius: 8px;
+			}
+
+			img#EventImage2 {
+				display: block;
+				width: 95%;
+				margin: auto;
+				padding: 10px;
+			}
+		}
+
+		/* for 700px or less */
+		@media screen and (max-width: 700px) {
+
+			#map_canvas {
+				margin: 10px 0 0 5px;
+				height: 300px;
+				width: 95%;
+				display: inline-block;
+				border: 1px solid gray;
+			}
+
+			#middle {
+				margin: 0px 0px 5px 0px;
+			}
+
+			header {
+				height: auto;
+			}
+
+
+			header,
+			#content,
+			#middle {
+				/* margin-bottom: 5px;*/
+			}
+
+			div#PastEventHeading {
+				font-size: 16px;
+				font-weight: bold;
+				color: #d00000;
+				text-align: left;
+				padding-left: 0px;
+			}
+
+			div#PastEventHeading a:ACTIVE,
+			div#PastEventHeading a:LINK,
+			div#PastEventHeading a:VISITED {
+				text-decoration: underline;
+				display: inline-block;
+				font-weight: bold;
+				font-size: 16px;
+				color: Navy;
+				margin: 15px 0 5px 0px;
+			}
+
+			div#PastEventHeading a:HOVER {
+				color: #d00000;
+				text-decoration: underline;
+			}
+		}
+
+		a.externallink:ACTIVE,
+		a.externallink:LINK,
+		a.externallink:VISITED {
+			font-weight: normal;
+			color: #4f4f4f;
+			text-decoration: underline;
+		}
+
+		a.externallink:HOVER {
+			color: red;
+		}
+
+		div.ev2 {
+			margin: 5px 10px 0 10px;
+			color: #4f4f4f;
+			font-size: 14px;
+			line-height: 20px;
+		}
+
+		div.ev3 {
+			padding: 5px 10px 5px 10px;
+			color: #4f4f4f;
+			font-weight: normal;
+			font-size: 14px;
+			display: block;
+		}
+
+
+		.viewMap {
+			padding: 0px 10px 5px 10px;
+			color: #136f63;
+			font-weight: bold;
+			font-size: 16px;
+			display: block;
+		}
+
+		div#contactPhonePanel {
+			margin: 5px 10px 5px 10px;
+			color: #4f4f4f;
+			font-weight: normal;
+			font-size: 14px;
+		}
+
+		p.ev4 {
+			margin: 30px 10px 0 10px;
+			color: #376b95;
+			font-weight: bold;
+		}
+
+		div.ev5 {
+			margin: 5px 10px 5px 10px;
+			color: #4f4f4f;
+			font-size: 16px;
+			font-weight: normal;
+			align-items: center;
+		}
+
+		div.datetime {
+			display: inline-flex;
+		}
+
+		.datetimeicon {
+			padding-right: 5px;
+		}
+
+		div.sectionheading {
+			color: #4f4f4f;
+			font-size: 14px;
+			font-weight: bold;
+			padding: 5px 0 5px 0;
+		}
+
+		#lblShortDescriptionsmaller {
+			color: #4f4f4f;
+			font-size: 16px;
+			font-weight: normal;
+		}
+
+		a.ev6:ACTIVE,
+		a.ev:LINK,
+		a.ev:VISITED {
+			text-decoration: underline;
+			font-weight: bold;
+			font-size: 1.0em;
+			color: #376b95;
+			margin-right: 5px;
+		}
+
+		a.ev6:HOVER {
+			color: #d00000;
+		}
+
+
+		a.evmap:ACTIVE,
+		a.evmap:LINK,
+		a.evmap:VISITED {
+			text-decoration: underline;
+			font-weight: normal;
+			font-size: 14px;
+			color: #376b95;
+			margin-right: 0px;
+			margin-left: 15px;
+		}
+
+		a.evmap:HOVER {
+			color: #d00000;
+		}
+
+		a.ev6 {
+			color: Navy;
+			font-size: 14px;
+			padding: 0 0 0 20px;
+			text-align: left;
+		}
+
+
+
+		div#videoPanel {
+			text-align: left;
+			margin-left: 10px;
+			padding: 0px 0 5px 0;
+		}
+
+		div#pdfPanel {
+			text-align: left;
+			margin: 5px 0 5px 10px;
+		}
+
+		div#sharepage {
+			font-size: 14px;
+			padding: 0;
+			color: gray;
+			margin: 10px 0 0 5px;
+		}
+
+
+
+		a.pdfreader:ACTIVE,
+		a.pdfreader:LINK,
+		a.pdfreader:VISITED {
+			font-weight: normal;
+			font-size: 0.8em;
+			font-style: italic;
+			color: Gray;
+			text-decoration: none;
+			margin-left: 10px;
+		}
+
+		a.pdfreader:HOVER {
+			font-weight: bold;
+			color: #d00000;
+			text-decoration: underline;
+		}
+
+		div.sim {
+			margin-left: 10px;
+			margin-top: 10px;
+			padding-bottom: 10px;
+			font-size: 0.9em;
+		}
+
+		a.sl:ACTIVE,
+		a.sl:LINK,
+		a.sl:VISITED {
+			font-size: 18px;
+			font-weight: bold;
+			color: Navy;
+			text-decoration: none;
+		}
+
+		a.sl:HOVER {
+			color: #d00000;
+		}
+
+		.sv {
+			font-size: 12px;
+			color: #136f63;
+			font-weight: bold;
+		}
+
+		.sd {
+			font-size: 12px;
+			color: #2f6db0;
+			font-weight: bold;
+		}
+	</style>
+
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7136887379139272"
+		crossorigin="anonymous"></script>
+	<script type="text/javascript"
+		src="https://platform-api.sharethis.com/js/sharethis.js#property=67530f6727271500125f16c6&product=sticky-share-buttons&source=platform"
+		async="async"></script>
+
+	<meta property="og:title" content="Vivaldi Four Seasons by Candlelight - 25 January 2025 | WhereCanWeGo">
+	<meta property="og:url" content="https://www.wherecanwego.com/item/e1550829">
+	<meta property="og:type" content="website">
+	<link rel="canonical" href="https://www.wherecanwego.com/item/e1550829" />
+	<meta property="og:site_name" content="WhereCanWeGo">
+	<meta property="og:description" content="The exceptional musicians of the Piccadilly Sinfonietta perform Vivaldi&#39;s master piece The Four Seasons and other outstanding works in the beautiful candlelit setting of St Mary Le Strand, London. A hugely appealing programme designed to help you celebrate the weekend in style! There are many restaurants and bars nearby to complete your evening.
+
+&#39;Stunning&#39;  ClassicFM
+
+Note - there are two performances available: 6pm and 8pm
+
+Featuring
+The Piccadilly Sinfonietta
+Violin soloist to be announced soon
+
+Programme
+Mozart - Divertimento in Bb K137
+Vivaldi - The Four Seasons
+
+Since its formation in 2017, the Piccadilly Sinfonietta have become a regular feature on the UK concert scene, giving over 200 performances a year in some of the country’s most beautiful and prestigious venues. The ensemble comprises some of the most prodigious musical talent and performs exclusively with leading virtuoso soloists. The group performs under the artistic direction of its founder, concert pianist Warren Mailley-Smith and focuses on the virtuoso concerto repertoire of the baroque, classical and early romantic periods.
+
+Here&#39;s a short video of the Piccadilly Sinfonietta performing
+youtu.be/gN157xwtsnM">
+	<meta name="displayenddate" content="20250125">
+	<script type="application/ld+json">
+		{
+  "@context": "https://schema.org",
+  "type": "Event",
+  "name": "Vivaldi Four Seasons by Candlelight",
+"description": "The exceptional musicians of the Piccadilly Sinfonietta perform Vivaldis master piece The Four Seasons and other outstanding works in the beautiful candlelit setting of St Mary Le Strand, London. A hugely appealing programme designed to help you celebrate the weekend in style! There are many restaurants and bars nearby to complete your evening.
+
+Stunning  ClassicFM
+
+Note - there are two performances available: 6pm and 8pm
+
+Featuring
+The Piccadilly Sinfonietta
+Violin soloist to be announced soon
+
+Programme
+Mozart - Divertimento in Bb K137
+Vivaldi - The Four Seasons
+
+Since its formation in 2017, the Piccadilly Sinfonietta have become a regular feature on the UK concert scene, giving over 200 performances a year in some of the country’s most beautiful and prestigious venues. The ensemble comprises some of the most prodigious musical talent and performs exclusively with leading virtuoso soloists. The group performs under the artistic direction of its founder, concert pianist Warren Mailley-Smith and focuses on the virtuoso concerto repertoire of the baroque, classical and early romantic periods.
+
+Heres a short video of the Piccadilly Sinfonietta performing
+youtu.be/gN157xwtsnM",
+"image": "https://www.wherecanwego.com/images/wcwg.jpg",
+"offers": "",
+"performer": "see website",
+"organizer": {
+  "@type": "Organization",
+  "name": "",
+  "url": ""
+  },
+ "eventStatus": "EventScheduled",
+ "eventAttendanceMode": "OfflineEventAttendanceMode",
+  "url": "https://www.wherecanwego.com/item/e1550829",
+        "startDate": "2025-01-25",
+        "endDate": "2025-01-25",
+   "location": {
+    "@type": "Place",
+    "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "51.512188",
+    "longitude": "-0.116863" 
+     },
+     "url": "",
+    "name": "",
+    "address": { 
+        "@type": "PostalAddress",
+        "streetAddress": "St Mary Le Strand Church",
+        "addressRegion": "London",
+        "postalCode": "WC2R 1ES",
+        "addressCountry": "GB"
+        }
+  
+     }
+}
+	</script>
+	<title>
+		Vivaldi Four Seasons by Candlelight - 25 January 2025 | WhereCanWeGo
+	</title>
+	<meta name="description"
+		content="The exceptional musicians of the Piccadilly Sinfonietta perform Vivaldis master piece The Four Seasons and other outstanding works in the beautiful candlelit setting of St Mary Le Strand, London. A hugely appealing programme designed to help you celebrate the weekend in style!" />
+</head>
+
+<body>
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v21.0">
+	</script>
+	<script>
+		function initMap() {
+            var map;
+            var myLatlng = new google.maps.LatLng({lat: 51.512188, lng: -0.116863});
+            var mapOptions = {
+                center: myLatlng, // Set our point as the centre location
+                zoom: 14, // Set the zoom level
+                streetViewControl: false,
+                mapTypeControl: false,
+                mapTypeId: 'roadmap' // set the default map type
+            };
+            // Display a map on the page
+            map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+            // Add a marker to the map based on our coordinates
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                title: ''
+            });
+        }
+	</script>
+
+	<div id="pagewrap">
+
+		<header>
+
+			<style type="text/css">
+				div#logo span {
+					color: navy;
+				}
+
+
+				div#logo-responsive {
+					display: none;
+				}
+
+				.LogoImage {
+					float: left;
+					position: absolute;
+					margin: 5px 5px 5px 0px;
+					z-index: 60;
+				}
+
+				.LogoImage img {
+					height: 80px;
+					width: 66px;
+				}
+
+				.logotype180 {
+					width: 180px;
+					height: 18px;
+				}
+
+				.TopLogo {
+					width: 200px;
+					height: 20px;
+					display: inline-block;
+					margin: 10px 10px 9px 55px;
+				}
+
+				ul.topnav {
+					list-style-type: none;
+					margin: 0px 0 0 75px;
+					background-color: #e1e7eb;
+				}
+
+				ul.topnav li {
+					margin: 0;
+					padding: 0;
+				}
+
+				ul.topnav li a {
+					text-decoration: none;
+					display: inline-block;
+					color: #2f2f2f;
+					text-align: center;
+					margin-right: -2px;
+					padding: 9px 12px 11px 12px;
+					font-size: 15px;
+				}
+
+				ul.topnav li.icon {
+					display: none;
+				}
+
+				li.WTabSelected {
+					list-style: none;
+					display: inline;
+				}
+
+				li.WTabActive {
+					list-style: none;
+					display: inline;
+					border-radius: 20px;
+				}
+
+				a.WTabSelected:ACTIVE,
+				a.WTabSelected:LINK,
+				a.WTabSelected:VISITED {
+					color: white;
+					background-color: #4786B9;
+					border-radius: 20px;
+				}
+
+
+				a.WTabActive:ACTIVE,
+				a.WTabActive:LINK,
+				a.WTabActive:VISITED {
+					color: #464242;
+					border-radius: 20px;
+				}
+
+				a.WTabActive:HOVER {
+					color: white;
+					background-color: #4786B9;
+				}
+
+
+				div#signin {
+					position: relative;
+				}
+
+				ul#topsignin {
+					position: absolute;
+					right: 5px;
+					top: -26px;
+					padding: 0;
+					margin: 0;
+					color: #1c1a1a;
+					font-size: 12px;
+					background-color: white;
+				}
+
+				ul#topsignin li {
+					padding: 0;
+					list-style: none;
+					display: inline-block;
+					margin: 0 0px 0 0px;
+				}
+
+				a.topsignin {
+					text-decoration: none;
+					font-weight: bold;
+					color: #1c1a1a;
+				}
+
+				a.topsignin:hover {
+					color: red;
+				}
+
+				@media screen and (max-width: 850px) {
+					div#logo {
+						display: none;
+					}
+
+					a.WTabActive:HOVER {
+						background-color: #e1e7eb;
+					}
+
+					div#logo-responsive {
+						display: block;
+						width: 100%;
+						margin: 0px auto;
+						text-align: center;
+						padding: 5px 0 0px 0;
+					}
+
+					div#logo-responsive p {
+						display: inline-block;
+					}
+
+					div#logo-responsive p.leftimage {
+						margin: 0 auto;
+					}
+
+					.adsensetop.responsive {
+						display: none;
+					}
+
+					ul.topnav {
+						border: none;
+						float: right;
+						margin: 0px 0 0 15px;
+					}
+
+					ul.topnav li {
+						display: none;
+					}
+
+					ul.topnav li a {
+						color: rgb(43, 54, 137);
+						font-size: 24px;
+						padding: 0px;
+					}
+
+					ul.topnav li.icon {
+						display: inline-block;
+						position: absolute;
+						right: 15px;
+						top: 0px;
+					}
+
+
+
+					ul.topnav.responsive {
+						padding: 0;
+						position: absolute;
+						top: 0px;
+						right: 0;
+						border: 1px solid navy;
+						z-index: 99;
+					}
+
+					ul.topnav.responsive li {
+						display: block;
+						border: none;
+						padding: 5px;
+						line-height: 20px;
+					}
+
+					ul.topnav.responsive li a {
+						text-align: right;
+						display: inline;
+						color: rgb(43, 54, 137);
+						font-weight: bold;
+						font-size: 15px;
+						margin-right: 0px;
+						width: 120px;
+					}
+
+					ul.topnav.responsive li.icon a {
+						display: none;
+					}
+
+					ul.topnav.responsive li a:HOVER {
+						color: red;
+					}
+
+					li.WTabSelected {
+						background-color: #e1e7eb;
+					}
+
+					a.WTabSelected:ACTIVE,
+					a.WTabSelected:LINK,
+					a.WTabSelected:VISITED {
+						background-color: #e1e7eb;
+					}
+
+					div#topleft {
+						display: inline-block;
+					}
+
+					div#topcentre {
+						display: inline-block;
+						font-size: 18px;
+						color: red;
+						padding: 0;
+						margin: 0;
+					}
+				}
+			</style>
+			<script>
+				function iconFunction() {
+        var x = document.getElementById("homeTopnav");
+        if (x.className === "topnav") {
+            x.className += " responsive";
+        } else {
+            x.className = "topnav";
+        }
+        var x = document.getElementById("content");
+        if (x.className === "adsensetop") {
+            x.className += " responsive";
+        } else {
+            x.className = "adsensetop";
+        }
+
+    }
+			</script>
+			<div id="logo">
+				<a id="HomeTabs_hpLogo" class="LogoImage"
+					href="https://www.wherecanwego.com"><img src="../images/wcwgminilogomobile2.gif" alt="WhereCanWeGo UK Logo" border="0" /></a>
+					<a id="HomeTabs_hpTitle" class="TopLogo"
+						href="https://www.wherecanwego.com"><img alt="Where Can We Go" src="../images/wcwglogotypemobile200.gif" border="0" height="20" width="200" /></a>
+						<span id="HomeTabs_lblPageTop">Britain's What's On Event Guide</span>
+			</div>
+			<div id="signin">
+				<ul id="topsignin">
+					<li>
+						<a id="HomeTabs_hlSignIn" title="Organiser&#39;s Sign In" class="topsignin"
+							href="https://www.wherecanwego.com/events/signin.aspx?tab=2&amp;sid=">Sign&nbsp;In</a></li>
+					<li>|</li>
+					<li>
+						<a id="HomeTabs_hlHelp" title="Help and FAQ&#39;s" class="topsignin"
+							href="https://www.wherecanwego.com/faq.aspx?sid=&amp;tab=6">FAQs</a></li>
+
+				</ul>
+
+			</div>
+			<div id="logo-responsive">
+				<p class="leftimage">
+					<a id="HomeTabs_hpHome" AlternateText="WhereCanWeGo - Whats On"
+						href="https://www.wherecanwego.com"><img alt="WhereCanWeGo Logo" src="../images/wcwgmobile180larger.gif" border="0" height="18" width="180" /></a>
+				</p>
+			</div>
+
+
+			<ul class="topnav" id="homeTopnav">
+				<li class="WTabSelected">
+					<a id="HomeTabs_Hyperlink1" title="WhereCanWeGo - Find great things to do - wherever you are"
+						class="WTabSelected" href="https://www.wherecanwego.com">Search What's On</a></li>
+				<li class="WTabActive">
+					<a id="HomeTabs_Hyperlink2" title="Add your own events to our what&#39;s on database"
+						class="WTabActive"
+						href="https://www.wherecanwego.com/events/signin.aspx?sid=&amp;tab=2">Add&nbsp;Events&nbsp;</a>
+				</li>
+				<li class="WTabActive">
+					<a id="HomeTabs_Hyperlink3" title="Add regular classes to our listings." class="WTabActive"
+						href="https://www.wherecanwego.com/events/signin.aspx?sid=&amp;tab=3">Add&nbsp;Classes&nbsp;</a>
+				</li>
+				<li class="WTabActive">
+					<a id="HomeTabs_Hyperlink4" title="Promote Attractions" class="WTabActive"
+						href="https://www.wherecanwego.com/events/signin.aspx?sid=&amp;tab=4">Add&nbsp;Attractions&nbsp;</a>
+				</li>
+				<li class="WTabActive">
+					<a id="HomeTabs_Hyperlink5" title="Get Event Alert Emails" class="WTabActive"
+						href="https://www.wherecanwego.com/events/signin.aspx?sid=&amp;tab=5">Alerts</a></li>
+				<li class="WTabActive">
+					<a id="HomeTabs_Hyperlink6" title="Help and FAQ&#39;s" class="WTabActive"
+						href="https://www.wherecanwego.com/faq.aspx?sid=&amp;tab=6">Help</a></li>
+				<li class="icon">
+					<a href="javascript:void(0);" onclick="iconFunction()">&#9776;</a>
+				</li>
+			</ul>
+
+
+
+
+		</header>
+
+		<section id="middle">
+
+			<!-- EventPageResponsive -->
+			<ins class="adsbygoogle" style="display: block" data-ad-client="ca-pub-7136887379139272"
+				data-ad-slot="8598040998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+			<script>
+				(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			<p class="evBack">
+
+				<a id="hpback" class="evBack" href="javascript:history.go(-1)" rel="nofollow"
+					href="https://www.wherecanwego.com"><img id="Image1" title="&lt; Back" alt="Back" src="/images/left-arrow80.png" border="0" height="20" width="20" /></a>
+
+			</p>
+
+			<!--   <div id="ev"> -->
+			<div class="Flash">
+
+			</div>
+			<div class="FlashNote">
+
+			</div>
+
+			<div class="description">
+				<a id="ImageThumbnailLink"></a>
+
+			</div>
+			<div class="spacing">
+				<div id="TwoImages">
+
+					<div>
+
+					</div>
+				</div>
+
+				<h1>
+					<span id="lblShortDescription">Vivaldi Four Seasons by Candlelight</span></h1>
+
+				<div class="venueline">
+					<div class="datetime">
+						<img id="Image3" class="datetimeicon" src="/images/location-icon.jpg" alt="venue address" border="0" height="18" /><span id="lblVenue" class="showvenue">St Mary Le Strand Church, London WC2R 1ES</span>
+
+					</div>
+					<div class="viewMap">
+						<a id="hpMap" class="evmap" rel="nofollow"
+							href="https://www.wherecanwego.com/item/e1550829?map=1#mapPanel">view on map</a>
+					</div>
+
+				</div>
+				<div class="ev5">
+					<div class="datetime">
+						<img id="Image2" class="datetimeicon" src="/images/calendar.png" alt="event date" border="0" height="18" /><span id="lblDates">Today<br /></span>
+					</div>
+				</div>
+			</div>
+			<div class="spacing">
+				<div class="otherlines">
+					<div class="datetime">
+						<img id="Image4" class="datetimeicon" src="/images/clock-icon-bold.png" alt="event times" border="0" height="18" /><span id="lblTimes">Sat 25 Jan 2025, 6:00PM - 7:00PM<br />£25, £35, £45</span>
+					</div>
+				</div>
+				<div class="otherlines">
+					<div class="datetime">
+
+						<div id="PanelNoFollow">
+
+
+
+						</div>
+
+					</div>
+				</div>
+				<div id="PanelTickets">
+
+					<div class="otherlines">
+						<div class="datetime">
+							<img id="ImgTicketicon" class="datetimeicon" src="/images/tickets.png" alt="tickets" border="0" height="18" /><a
+								id="hlTicketing" title="Buy Tickets" class="externallink" rel="nofollow,ugc"
+								href="https://www.ticketsource.co.uk/booking/category/ONKRUTlAyfqx">Buy Tickets</a>
+						</div>
+					</div>
+
+				</div>
+
+
+			</div>
+
+			<div class="spacing">
+				<div class="sectionheading">Spread the word</div>
+				<div id="sharethis">
+					<!-- ShareThis BEGIN -->
+					<div class="sharethis-inline-share-buttons"></div>
+					<!-- ShareThis END -->
+				</div>
+			</div>
+			<div class="spacing">
+				<div class="sectionheading">About this Event</div>
+				<h2>
+					<span id="lblShortDescriptionsmaller">Vivaldi Four Seasons by Candlelight</span></h2>
+				<div class="ev2">
+					<span id="lblDescription">The exceptional musicians of the Piccadilly Sinfonietta perform Vivaldi's master piece The Four Seasons and other outstanding works in the beautiful candlelit setting of St Mary Le Strand, London. A hugely appealing programme designed to help you celebrate the weekend in style! There are many restaurants and bars nearby to complete your evening.
+<br />
+<br />'Stunning'  ClassicFM
+<br />
+<br />Note - there are two performances available: 6pm and 8pm
+<br />
+<br />Featuring
+<br />The Piccadilly Sinfonietta
+<br />Violin soloist to be announced soon
+<br />
+<br />Programme
+<br />Mozart - Divertimento in Bb K137
+<br />Vivaldi - The Four Seasons
+<br />
+<br />Since its formation in 2017, the Piccadilly Sinfonietta have become a regular feature on the UK concert scene, giving over 200 performances a year in some of the country’s most beautiful and prestigious venues. The ensemble comprises some of the most prodigious musical talent and performs exclusively with leading virtuoso soloists. The group performs under the artistic direction of its founder, concert pianist Warren Mailley-Smith and focuses on the virtuoso concerto repertoire of the baroque, classical and early romantic periods.
+<br />
+<br />Here's a short video of the Piccadilly Sinfonietta performing
+<br />youtu.be/gN157xwtsnM</span>
+				</div>
+
+				<div class="ev2">
+					<span id="lblExtra"></span>
+				</div>
+
+			</div>
+
+
+
+
+
+
+
+
+			<!-- </div>-->
+
+			<div>
+				<!-- ResultsResponsiveEnd -->
+				<ins class="adsbygoogle" style="display: block" data-ad-client="ca-pub-7136887379139272"
+					data-ad-slot="5442012194" data-ad-format="auto" data-full-width-responsive="true"></ins>
+				<script>
+					(adsbygoogle = window.adsbygoogle || []).push({});
+				</script>
+			</div>
+			<div id="sims">
+				<div id="SimPanel">
+
+					<p class="ev4">
+						<strong>Similar Current Events</strong>
+					</p>
+					<p class="ev6">
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl0_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1551532">Classical Harp by Candlelight</a><br />
+							<span id="SimRepeater__ctl0_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl0_Sim1_lblDate" class="sd">Thursday 30 January</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl1_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1550508">Mozart Piano Concertos by
+								Candlelight</a><br />
+							<span id="SimRepeater__ctl1_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl1_Sim1_lblDate" class="sd">Friday 31 January</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl2_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1551534">Bach Cello Suites by
+								Candlelight</a><br />
+							<span id="SimRepeater__ctl2_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl2_Sim1_lblDate" class="sd">Friday 31 January</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl3_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1550849">Bach and Vivaldi Violin Concertos by
+								Candlelight</a><br />
+							<span id="SimRepeater__ctl3_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl3_Sim1_lblDate" class="sd">Saturday 1 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl4_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1550848">Bach and Vivaldi Violin Concertos by
+								Candlelight</a><br />
+							<span id="SimRepeater__ctl4_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl4_Sim1_lblDate" class="sd">Saturday 1 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl5_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1551535">Brahms by Candlelight</a><br />
+							<span id="SimRepeater__ctl5_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl5_Sim1_lblDate" class="sd">Thursday 6 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl6_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1561027">Jamie Laing & Claire Habbershaw:
+								Strand International Song Series</a><br />
+							<span id="SimRepeater__ctl6_Sim1_lblVenue" class="sv">St Mary Le Strand Church, The Strand, London</span>
+							<span id="SimRepeater__ctl6_Sim1_lblDate" class="sd">Thursday 6 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl7_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1550851">Vivaldi Four Seasons by
+								Candlelight</a><br />
+							<span id="SimRepeater__ctl7_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl7_Sim1_lblDate" class="sd">Saturday 8 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl8_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1550852">Vivaldi Four Seasons by
+								Candlelight</a><br />
+							<span id="SimRepeater__ctl8_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl8_Sim1_lblDate" class="sd">Saturday 8 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl9_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1550392">The Wood (Double Bass) Quartet -
+								Strand Chamber Music Series 2024/5</a><br />
+							<span id="SimRepeater__ctl9_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl9_Sim1_lblDate" class="sd">Thursday 13 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl10_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1550393">Valentine&rsquo;s Moonlight
+								Sonata</a><br />
+							<span id="SimRepeater__ctl10_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl10_Sim1_lblDate" class="sd">Friday 14 February</span>
+						</div>
+
+
+
+						<div class="sim">
+							<a id="SimRepeater__ctl11_Sim1_hpEvent" title="Event Details" class="sl"
+								href="https://www.wherecanwego.com/item/e1551536">Valentine&rsquo;s Chopin and
+								Champagne</a><br />
+							<span id="SimRepeater__ctl11_Sim1_lblVenue" class="sv">St Mary Le Strand Church, London</span>
+							<span id="SimRepeater__ctl11_Sim1_lblDate" class="sd">Friday 14 February</span>
+						</div>
+
+
+					</p>
+
+				</div>
+			</div>
+			<div class="ev3">
+				<a id="hlTownResults" href="https://www.wherecanwego.com/whats-on/london">Find more Events around
+					London</a>
+			</div>
+			<div class="ev3">
+				<a id="hlCountyResults" href="https://www.wherecanwego.com/whats-on/london">Discover more Events in
+					London</a>
+			</div>
+		</section>
+
+		<div class="bottommargin">
+		</div>
+	</div>
+
+</body>
+
+<script type="text/javascript">
+	function hideView() {
+        var x = document.getElementById("lblVenue");
+        var y = document.getElementById("hlViewAddress");
+        if (x.style.display === "") {
+            x.style.display = "none";
+        }
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            y.innerHTML = "hide address";
+        } else {
+            x.style.display = "none";
+            y.innerHTML = "show address";
+        }
+    }
+
+</script>
+
+</html>
