@@ -26,7 +26,7 @@ class HTMLReader(ABC):
         """
         raise NotImplementedError("Subclasses must implement the `get_event_results` method")
     @abstractmethod
-    def get_event_metadata(self)->List[Tag]:
+    def get_event_metadata(self, content:str)->List[Tag]:
         """
         Ensures that subclasses implement the `get_event_metadata` method
         """
@@ -50,7 +50,7 @@ class WhereCanWeGoReader(HTMLReader):
         event_results=soup.find_all("div", class_="EventResults")
         return event_results
 
-    def get_event_metadata(self)->List[dict]:
+    def get_event_metadata(self, content)->List[dict]:
         """
         Extracts metadata for an event from the HTML content.
 
@@ -67,7 +67,7 @@ class WhereCanWeGoReader(HTMLReader):
                 - 'location' (str): The location where the event will be held.
                 - 'more_info_url' (str): The URL linking to more information about the event.
         """
-        event_results=self.get_event_results()
+        event_results=self.get_event_results(content)
         event_metadata = [
         {
             "event_title": result.find("h2", class_="eventtitle")

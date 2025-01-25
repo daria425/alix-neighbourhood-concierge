@@ -120,9 +120,14 @@ class WhereCanWeGoSearch(HTMLSearch):
         dict: The response from the `more_info_url` or an error message.
         """
         url=event.get("more_info_url")
-        if url:
-            return self.run_search(url, kwargs={})
-        return {"error": "No URL provided"}
+        event_id=event.get("event_id")
+        if url and event_id:
+            html_content=self.run_search(url, kwargs={})
+            return {
+                "html_content": html_content, 
+                "event_id": event_id
+            }
+        return {"error": "No URL/event id provided"}
     
     def fetch_event_details(self, event_metadata:List[dict]):
         """
