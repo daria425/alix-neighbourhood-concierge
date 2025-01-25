@@ -59,6 +59,7 @@ class WhereCanWeGoReader(HTMLReader):
         - Event description
         - Event location
         - URL for more information
+        -Event ID to match detail contents by
 
         Returns:
             List[dict]: A list of dictionaries containing the following keys:
@@ -86,20 +87,37 @@ class WhereCanWeGoReader(HTMLReader):
         }
         for result in event_results
     ]
-        print(event_metadata[0])
         return event_metadata
     
-    def get_event_detail(self, content:str):
-        soup=self._parse_content(content)
+    def get_event_detail(self, event_dict:dict):
+        """
+        Extracts detailed information about an event from its HTML content.
+
+        Args:
+            event_dict (dict): A dictionary containing the following keys:
+                - 'event_id' (str): The unique identifier for the event.
+                - 'html_content' (str): The raw HTML content of the event details page.
+
+        Returns:
+            dict: A dictionary containing detailed information about the event, with the following structure:
+                - 'event_id' (str): The unique identifier for the event.
+                - 'sections' (list): A list of sections, where each section is a dictionary containing:
+                    - 'text_content' (str): The textual content of the section.
+                    - 'links' (list): A list of hyperlinks found within the section.
+        """
+        soup=self._parse_content(event_dict["html_content"])
         info_containers=soup.find_all("div", class_="spacing")
-        event_details={}
+        event_details={"event_id":event_dict["event_id"]}
+        detail_sections=[]
         for i in range(0, len(info_containers)):
             text_content=info_containers[i].text
             links=[link.get("href") for link in info_containers[i].find_all("a")]
-            event_details[f'container_{i}_content']={
+            section_content={
                 "text_content": text_content, 
                 "links":links
             }
+            detail_sections.append(section_content)
+        event_details["sections"]=detail_sections
         return event_details
 
 

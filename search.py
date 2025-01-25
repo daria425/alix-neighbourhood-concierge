@@ -61,7 +61,7 @@ class HTMLSearch(ABC):
     """
     base_url: str
 
-    def run_search(self, url, kwargs):
+    def run_search(self, url, kwargs: dict=None):
         if kwargs is None:
             kwargs = {}
         try:
@@ -75,7 +75,7 @@ class HTMLSearch(ABC):
         except Exception as err:
             return {"error": f"An unexpected error occurred: {err}"}
     @abstractmethod
-    def create_request_url(self, postcode: str):
+    def create_request_url(self, postcode: str, params:dict=None):
         """
         Creates a search request url to scrape (for event listing websites)
         """
@@ -106,8 +106,9 @@ class WhereCanWeGoSearch(HTMLSearch):
             for key, value in params.items():
                 if value is not None: 
                     url += f"&{key}={value}"
+        return url
 
-    def _fetch_event(self,event):
+    def _fetch_event(self,event:str)->dict:
         """
         Fetches HTML content for an individual event.
 
@@ -117,7 +118,10 @@ class WhereCanWeGoSearch(HTMLSearch):
 
         Returns:
         --------
-        dict: The response from the `more_info_url` or an error message.
+        dict: {
+        html_content: The response from the `more_info_url`, 
+        event_id: ID of the event passed in
+        } or an error message.
         """
         url=event.get("more_info_url")
         event_id=event.get("event_id")
