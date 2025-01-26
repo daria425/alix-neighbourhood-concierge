@@ -116,16 +116,16 @@ class WhereCanWeGoSearch(HTMLSearch):
 
         Args:
         ------
-            event (dict): A dictionary containing event metadata, including a `more_info_url`.
+            event (dict): A dictionary containing event metadata, including a `url`.
 
         Returns:
         --------
         dict: {
-        html_content: The response from the `more_info_url`, 
+        html_content: The response from the `url`, 
         event_id: ID of the event passed in
         } or an error message.
         """
-        url=event.get("more_info_url")
+        url=event.get("url")
         event_id=event.get("event_id")
         if url and event_id:
             html_content=self.run_search(url, kwargs={})
@@ -145,7 +145,7 @@ class WhereCanWeGoSearch(HTMLSearch):
 
         Returns:
         --------
-        List[dict]: A list of responses from the `more_info_url` of the events.
+        List[dict]: A list of responses from the `url` of the events.
         """
         with ThreadPoolExecutor() as executor:
             futures = [executor.submit(self._fetch_event, event) for event in event_metadata]

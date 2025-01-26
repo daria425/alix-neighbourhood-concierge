@@ -38,7 +38,8 @@ class HTMLReader(ABC):
         """
         raise NotImplementedError("Subclasses must implement the `get_event_detail` method")
     
-class WhereCanWeGoReader(HTMLReader):  
+class WhereCanWeGoReader(HTMLReader): 
+    domain="www.wherecanwego.com" 
     def get_event_results(self, content)->List[Tag]:
         """
         Finds and returns all event result containers in the HTML.
@@ -55,6 +56,7 @@ class WhereCanWeGoReader(HTMLReader):
         Extracts metadata for an event from the HTML content.
 
         The metadata includes:
+         -Event provider domain
         - Event title
         - Event description
         - Event location
@@ -66,11 +68,12 @@ class WhereCanWeGoReader(HTMLReader):
                 - 'event_title' (str): The title of the event.
                 - 'description' (str): A truncated description of the event.
                 - 'location' (str): The location where the event will be held.
-                - 'more_info_url' (str): The URL linking to more information about the event.
+                - 'url' (str): The URL linking to more information about the event.
         """
         event_results=self.get_event_results(content)
         event_metadata = [
         {
+            "domain": self.domain,
             "event_title": result.find("h2", class_="eventtitle")
                                 .find("a", id=re.compile("EventRepeater"))
                                 .text.replace("\n", "").strip(),
@@ -78,7 +81,7 @@ class WhereCanWeGoReader(HTMLReader):
                                  .text.replace("\n", "").replace("more >", "").strip(),
             "location": result.find("div", class_="VenueLine")
                               .text.replace("\n", "").strip(),
-            "more_info_url": result.find("h2", class_="eventtitle")
+            "url": result.find("h2", class_="eventtitle")
                                    .find("a", id=re.compile("EventRepeater"))
                                    .get("href"),
             "event_id": result.find("h2", class_="eventtitle")

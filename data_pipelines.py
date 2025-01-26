@@ -2,6 +2,9 @@ from read_html import WhereCanWeGoReader
 from search import WhereCanWeGoSearch
 from utils import validate_query
 from typing import List
+import json
+postcode="N19QZ"
+miles=2
 
 
 
@@ -24,5 +27,8 @@ def get_where_can_we_go_dset(query:dict)->List[dict]:
         matching_event_detail = next((detail for detail in event_details if detail['event_id'] == event['event_id']), None)
         if matching_event_detail:
             event['event_detail'] = matching_event_detail
-    return event_details
+    return event_metadata
 
+e_deets=get_where_can_we_go_dset({"postcode":postcode, "miles":miles})
+with open("data/json/wherecanwego_sample_results.json", "w") as f:
+    f.write(json.dumps(e_deets))

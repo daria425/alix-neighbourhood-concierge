@@ -61,12 +61,13 @@ class EventInfoExtractionAgent(AgentWithTools):
                 },
                 "is_within_2_weeks":{
                     "type":"boolean", 
-                    "description":f"whether the event is within 2 weeks. False if there is no event date, the event date is uncertain or event date is not within 2 weeks of {datetime.now().strftime('%d %b %Y')}"
+                    "description":f"True if date and time of event is within 2 weeks of {datetime.now().strftime('%d %b %Y')}. False otherwise"
                 }
             },
             "required": ["tag","event_name", "is_within_2_weeks"],
         },
     )
+        print(function)
         return function
     def run_task(self, contents:str):
         model_name=self.config['model_name']
@@ -81,7 +82,34 @@ contents="""
 -----------
 BEGIN ENTRY
 -----------
-As part of our programme of events to mark #IDAHOBIT forum+ will be screening 'The Matthew Shepard Story', based on the true life story of openly gay US college student Matthew Shepard killed in an act of hate crime in 1998. The screening will take place on Monday 13th May at the Hugh Cubitt Centre, N1 9QZ.
+{
+    "event_title": "Bach and Vivaldi Violin Concertos by Candlelight",
+    "description": "The exceptional musicians of the Piccadilly Sinfonietta perform a selection of Bach's magnificent Violin concertos by candlelight in the...",
+    "location": "St Mary Le Strand Church, London WC2R 1ES",
+    "url": "https://www.wherecanwego.com/item/e1550848",
+    "event_id": "e1550848",
+    "event_detail": {
+      "event_id": "e1550848",
+      "sections": [
+        {
+          "text_content": "\n\n\n\n\n\nBach and Vivaldi Violin Concertos by Candlelight\n\n\nSt Mary Le Strand Church, London WC2R 1ES\n\n\nview on map\n\n\n\n\nSaturday 1 February\n\n\n",
+          "links": ["https://www.wherecanwego.com/item/e1550848?map=1#mapPanel"]
+        },
+        {
+          "text_content": "\n\n\n6pm-7pm\u00a325, \u00a335, \u00a345\n\n\n\n\n\n\n\n\n\n\n\nBuy Tickets\n\n\n\n\n\n03336663366\nfor\u00a0latest\u00a0times\u00a0or\u00a0cancellations.\n\n",
+          "links": [
+            "https://www.eventim-light.com/uk/a/63c82ca274fb184f4eebf902/e/667d729d286e5b6c4634ee06?lang=en",
+            "tel:03336663366"
+          ]
+        },
+        { "text_content": "\nSpread the word\n\n\n\n\n\n", "links": [] },
+        {
+          "text_content": "\nAbout this Event\n\nBach and Vivaldi Violin Concertos by Candlelight\n\nThe exceptional musicians of the Piccadilly Sinfonietta perform a selection of Bach's magnificent Violin concertos by candlelight in the beautiful setting of St Mary Le Strand, London.  A hugely appealing evening designed to help you celebrate the weekend in style! There are also plenty of bars and restaurants nearby to complete your night.\r 'Stunning' - Classic FM\r Note - there are two performances available: 6pm and 8pm\r Featuring\rThe Piccadilly Sinfonietta\rVictoria Lyon (violin)\r Programme\r Bach - Violin Concerto in E Major, BWV 1042\r Bach - Air on a G String (from Orchestral Suite No. 3 in D Major, BWV 1068)\r Vivaldi - Double Violin Concerto in A Minor, RV 522\r Bach - Concerto for Two Violins in D Minor, BWV 1043\r Since its formation in 2017, the Piccadilly Sinfonietta have become a regular feature on the UK concert scene, giving over 200 performances a year in some of the country\u2019s most beautiful and prestigious venues. The ensemble comprises some of the most prodigious musical talent and performs exclusively with leading virtuoso soloists. The group performs under the artistic direction of its founder, concert pianist Warren Mailley-Smith and focuses on the virtuoso concerto repertoire of the baroque, classical and early romantic periods.\r Here's a short video of the Piccadilly Sinfonietta performing:\r youtu.be/gN157xwtsnM\n\n\n\n\n",
+          "links": []
+        }
+      ]
+    }
+  }
 ----------
 END ENTRY
 ----------

@@ -1,12 +1,9 @@
-from typing import List
+
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
-import json
 import re
-from response_generator import ResponseGenerator
-from vertexai.generative_models import FunctionDeclaration, Tool
-from datetime import datetime
+from urllib.parse import urlparse
 class SearchResultReader:
     def __init__(self, search_results):
         self.search_results=search_results
@@ -51,7 +48,8 @@ class SearchResultReader:
             -----------
             BEGIN ENTRY
             -----------
-            {res['content']}
+            domain:{urlparse(res['url'])}
+            content:{res['content']}
             ----------
             END ENTRY
             ----------
