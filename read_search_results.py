@@ -4,6 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse
+from uuid import uuid4
+from utils import format_timestamp
 class SearchResultReader:
     def __init__(self, search_results):
         self.search_results=search_results
@@ -38,23 +40,13 @@ class SearchResultReader:
                 cleaned_content=self._get_clean_text(content=extracted_content)
                 search_result = futures[future]  # Corresponding search result dict
                 search_result["content"] = cleaned_content if cleaned_content != '' else search_result['content']
+                search_result["event_id"]=str(uuid4())
+                search_result["domain"]=urlparse(search_result['url']).netloc
+                search_result["timestamp"]=format_timestamp()
+                search_result.pop("score", None)
+                search_result.pop("raw_content", None)
+                print(search_result["domain"])
             return self.search_results
     
-    def format_results_for_agent(self): #instead format for db here
-        results_with_content=self.scrape_results()
-        texts=[]
-        for res in results_with_content:
-            info=f"""
-            -----------
-            BEGIN ENTRY
-            -----------
-            domain:{urlparse(res['url'])}
-            content:{res['content']}
-            ----------
-            END ENTRY
-            ----------
-            """
-            texts.append(info)
-        return texts
 
 

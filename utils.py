@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from typing import List
+from datetime import datetime, timezone
 load_dotenv()
 
 def get_search_api_keys()->dict:
@@ -40,3 +41,8 @@ def validate_query(query: dict, required_keys: List[str]) -> None:
     missing_keys = set(required_keys) - set(query.keys())
     if missing_keys:
         raise ValueError(f"Missing required keys in query: {', '.join(missing_keys)}")
+
+def format_timestamp():
+    current_timestamp = datetime.now(timezone.utc)
+    iso_timestamp = current_timestamp.isoformat() + "Z"
+    return iso_timestamp

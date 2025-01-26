@@ -2,7 +2,10 @@ from read_html import WhereCanWeGoReader
 from search import WhereCanWeGoSearch
 from utils import validate_query
 from typing import List
-import json
+from search import TavilySearch
+from utils import get_search_api_keys
+from read_search_results import SearchResultReader
+
 postcode="N19QZ"
 miles=2
 
@@ -29,6 +32,15 @@ def get_where_can_we_go_dset(query:dict)->List[dict]:
             event['event_detail'] = matching_event_detail
     return event_metadata
 
-e_deets=get_where_can_we_go_dset({"postcode":postcode, "miles":miles})
-with open("data/json/wherecanwego_sample_results.json", "w") as f:
-    f.write(json.dumps(e_deets))
+def get_tavily_dset(query:dict):
+    api_keys=get_search_api_keys()
+    validate_query(query, required_keys=['postcode'])
+    searcher=TavilySearch(api_key=api_keys["tavily"])
+    search_query=f"{query["postcode"]} events"
+    request_config=searcher.create_search_request(search_query, {"exclude_domains":["wherecanwego.com", "peabody.org.uk"], "limit":10})
+    response=searcher.run_search(request_config)
+    search_result_reader=SearchResultReader(search_results=response["results"])
+    search_results=search_result_reader.scrape_results()
+    return search_results
+
+# create some executor interface that runs this and adds the client & postcode as well
