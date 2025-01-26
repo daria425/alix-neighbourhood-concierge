@@ -13,6 +13,8 @@ class Search(ABC):
     def __init__(self, api_key:str):
         if not hasattr(self, "base_url") or not self.base_url:
             raise ValueError("Subclasses must define a `base_url` attribute.")
+        if api_key is None:
+            raise ValueError("A valid API key must be provided to initialize a search subclass") # so i dont forget lol
         self.api_key=api_key
         
     def run_search(self, request_config:dict, kwargs:dict=None):
@@ -40,7 +42,7 @@ class Search(ABC):
             if request_config["method"]=="GET":
                 response = requests.get(request_config["url"], **kwargs)
             else:
-                response=requests.post(request_config["url"], json=request_config.get("request_body", {}),**kwargs)
+                response=requests.post(request_config["url"], json=request_config.get("request_body", {}),**kwargs) #TO-DO maybe clean up
             return response.json()
         except requests.exceptions.HTTPError as http_err:
             return {"error": f"HTTP error occurred: {http_err}", "status_code": response.status_code}

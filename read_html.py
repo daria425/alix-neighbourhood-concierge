@@ -37,7 +37,7 @@ class HTMLReader(ABC):
         Ensures that subclasses implement the `get_event_detail` method
         """
         raise NotImplementedError("Subclasses must implement the `get_event_detail` method")
-
+    
 class WhereCanWeGoReader(HTMLReader):  
     def get_event_results(self, content)->List[Tag]:
         """

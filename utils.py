@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from typing import List
 load_dotenv()
 
 def get_search_api_keys()->dict:
@@ -24,3 +25,18 @@ def get_search_api_keys()->dict:
     return {
         "serp": serp_api_key, "tavily":tavily_api_key
     }
+
+def validate_query(query: dict, required_keys: List[str]) -> None:
+    """
+    Validates that the query dictionary contains all the required keys.
+
+    Args:
+        query (dict): The input query dictionary to validate.
+        required_keys (List[str]): A list of required keys.
+
+    Raises:
+        ValueError: If any of the required keys are missing.
+    """
+    missing_keys = set(required_keys) - set(query.keys())
+    if missing_keys:
+        raise ValueError(f"Missing required keys in query: {', '.join(missing_keys)}")
