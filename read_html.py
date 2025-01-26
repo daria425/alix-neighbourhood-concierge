@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from utils import format_timestamp
 from typing import List
 from abc import ABC, abstractmethod
 import re
@@ -70,6 +71,7 @@ class WhereCanWeGoReader(HTMLReader):
                 - 'description' (str): A truncated description of the event.
                 - 'location' (str): The location where the event will be held.
                 - 'url' (str): The URL linking to more information about the event.
+                -'timestamp'(str): ISO formatted time string of when the scraping was executed
         """
         event_results=self.get_event_results(content)
         event_metadata = [
@@ -85,7 +87,8 @@ class WhereCanWeGoReader(HTMLReader):
             "url": result.find("h2", class_="eventtitle")
                                    .find("a", id=re.compile("EventRepeater"))
                                    .get("href"),
-            "event_id": str(uuid4())
+            "event_id": str(uuid4()), 
+            "timestamp": format_timestamp()
         }
         for result in event_results
     ]
@@ -98,16 +101,16 @@ class WhereCanWeGoReader(HTMLReader):
         Args:
             event_dict (dict): A dictionary containing the following keys:
                 - 'event_id' (str): The unique identifier for the event.
-                - 'html_content' (str): The raw HTML content of the event details page.
+                - 'content' (str): The raw HTML content of the event details page.
 
         Returns:
             dict: A dictionary containing detailed information about the event, with the following structure:
                 - 'event_id' (str): The unique identifier for the event.
                 - 'sections' (list): A list of sections, where each section is a dictionary containing:
-                    - 'text_content' (str): The textual content of the section.
+                    - 'content' (str): The textual content of the section.
                     - 'links' (list): A list of hyperlinks found within the section.
         """
-        soup=self._parse_content(event_dict["html_content"])
+        soup=self._parse_content(event_dict["content"])
         info_containers=soup.find_all("div", class_="spacing")
         event_details={"event_id":event_dict["event_id"]}
         detail_sections=[]

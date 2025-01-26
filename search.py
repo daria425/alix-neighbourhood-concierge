@@ -130,7 +130,7 @@ class WhereCanWeGoSearch(HTMLSearch):
         if url and event_id:
             html_content=self.run_search(url, kwargs={})
             return {
-                "html_content": html_content, 
+                "content": html_content, 
                 "event_id": event_id
             }
         return {"error": "No URL/event id provided"}
