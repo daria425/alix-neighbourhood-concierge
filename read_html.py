@@ -3,6 +3,7 @@ from bs4.element import Tag
 from typing import List
 from abc import ABC, abstractmethod
 import re
+from uuid import uuid4
 class HTMLReader(ABC):
     """
     Absract base class for reading the HTML content of a page.  
@@ -65,7 +66,7 @@ class WhereCanWeGoReader(HTMLReader):
 
         Returns:
             List[dict]: A list of dictionaries containing the following keys:
-                - 'event_title' (str): The title of the event.
+                - 'title' (str): The title of the event.
                 - 'description' (str): A truncated description of the event.
                 - 'location' (str): The location where the event will be held.
                 - 'url' (str): The URL linking to more information about the event.
@@ -74,19 +75,17 @@ class WhereCanWeGoReader(HTMLReader):
         event_metadata = [
         {
             "domain": self.domain,
-            "event_title": result.find("h2", class_="eventtitle")
+            "title": result.find("h2", class_="eventtitle")
                                 .find("a", id=re.compile("EventRepeater"))
                                 .text.replace("\n", "").strip(),
-            "description": result.find("div", class_="description")
+            "content": result.find("div", class_="description")
                                  .text.replace("\n", "").replace("more >", "").strip(),
             "location": result.find("div", class_="VenueLine")
                               .text.replace("\n", "").strip(),
             "url": result.find("h2", class_="eventtitle")
                                    .find("a", id=re.compile("EventRepeater"))
                                    .get("href"),
-            "event_id": result.find("h2", class_="eventtitle")
-                                   .find("a", id=re.compile("EventRepeater"))
-                                   .get("href").split("/")[-1]
+            "event_id": str(uuid4())
         }
         for result in event_results
     ]
@@ -116,7 +115,7 @@ class WhereCanWeGoReader(HTMLReader):
             text_content=info_containers[i].text
             links=[link.get("href") for link in info_containers[i].find_all("a")]
             section_content={
-                "text_content": text_content, 
+                "content": text_content, 
                 "links":links
             }
             detail_sections.append(section_content)

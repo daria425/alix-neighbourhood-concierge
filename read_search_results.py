@@ -40,7 +40,7 @@ class SearchResultReader:
                 search_result["content"] = cleaned_content if cleaned_content != '' else search_result['content']
             return self.search_results
     
-    def format_results_for_agent(self):
+    def format_results_for_agent(self): #instead format for db here
         results_with_content=self.scrape_results()
         texts=[]
         for res in results_with_content:
