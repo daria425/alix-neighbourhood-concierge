@@ -1,10 +1,9 @@
 from read_html import WhereCanWeGoReader
-from search import WhereCanWeGoSearch
-from utils import validate_query
-from typing import List
-from search import TavilySearch
-from utils import get_search_api_keys
 from read_search_results import SearchResultReader
+from search import WhereCanWeGoSearch, TavilySearch
+from utils import validate_query, get_search_api_keys
+from typing import List
+
 
 postcode="N19QZ"
 miles=2
@@ -15,8 +14,6 @@ def get_where_can_we_go_dset(query:dict)->List[dict]:
     validate_query(query, required_keys=['postcode', 'miles'])
     searcher=WhereCanWeGoSearch()
     url=searcher.create_request_url(query['postcode'], {"miles":query['miles']})
-    print(url)
-
     html_content=searcher.run_search(url)
 
     reader=WhereCanWeGoReader()
@@ -36,8 +33,8 @@ def get_tavily_dset(query:dict):
     api_keys=get_search_api_keys()
     validate_query(query, required_keys=['postcode'])
     searcher=TavilySearch(api_key=api_keys["tavily"])
-    search_query=f"{query["postcode"]} events"
-    request_config=searcher.create_search_request(search_query, {"exclude_domains":["wherecanwego.com", "peabody.org.uk"], "limit":10})
+    search_query=f"{query['postcode']} events"
+    request_config=searcher.create_search_request(search_query, {"exclude_domains":["wherecanwego.com", "peabody.org.uk", "www.flightradar24.com"], "limit":10})
     response=searcher.run_search(request_config)
     search_result_reader=SearchResultReader(search_results=response["results"])
     search_results=search_result_reader.scrape_results()

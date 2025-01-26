@@ -1,4 +1,4 @@
-from vertexai.generative_models import GenerationResponse
+from vertexai.generative_models import GenerationResponse, ToolConfig
 from model_factory import ModelFactoryProvider
 from typing import List, Any
 import logging
@@ -6,7 +6,7 @@ class ResponseGenerator:
     def __init__(self):
         self.model_factory=ModelFactoryProvider.get_instance()
     
-    def generate_response(self, model_name: str, system_instruction: str, contents: List[str], tools: List[Any]=None)->GenerationResponse:
+    def generate_response(self, model_name: str, system_instruction: str, contents: List[str], tools: List[Any]=None,tool_config:ToolConfig=None )->GenerationResponse:
         """
         Generates a response based on the provided model name, system instruction, contents, response schema, and tools.
 
@@ -25,7 +25,7 @@ class ResponseGenerator:
         try:
             logging.info(f"Creating instance of {model_name}")
             model=self.model_factory.create_model(model_name, system_instruction)
-            response=model.generate_content(contents, tools=tools)
+            response=model.generate_content(contents, tools=tools, tool_config=tool_config )
             logging.info("Response generated")
             return response
         except Exception as e:
