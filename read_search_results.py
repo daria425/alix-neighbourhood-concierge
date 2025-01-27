@@ -37,17 +37,16 @@ class SearchResultReader:
             }
             for future in as_completed(futures):  
                 search_result = futures[future]  
+                search_result["event_id"] = str(uuid4())
+                search_result["domain"] = urlparse(search_result['url']).netloc
+                search_result["timestamp"] = format_timestamp()
+                search_result.pop("score", None)
+                search_result.pop("raw_content", None)
                 try:
                     extracted_content = future.result()
                     cleaned_content = self._get_clean_text(content=extracted_content)
-
                     search_result["content"] = cleaned_content if cleaned_content != '' else search_result['content']
-                    search_result["event_id"] = str(uuid4())
-                    search_result["domain"] = urlparse(search_result['url']).netloc
-                    search_result["timestamp"] = format_timestamp()
 
-                    search_result.pop("score", None)
-                    search_result.pop("raw_content", None)
 
                 except Exception as e:
                     print(f"Error processing URL {search_result['url']}: {e}")
