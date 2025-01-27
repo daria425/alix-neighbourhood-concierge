@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from utils import format_timestamp
+from utils import format_timestamp, generate_event_id
 from typing import List
 from abc import ABC, abstractmethod
 import re
@@ -41,7 +41,7 @@ class HTMLReader(ABC):
         raise NotImplementedError("Subclasses must implement the `get_event_detail` method")
     
 class WhereCanWeGoReader(HTMLReader): 
-    domain="www.wherecanwego.com" 
+    domain="wherecanwego.com" 
     def get_event_results(self, content)->List[Tag]:
         """
         Finds and returns all event result containers in the HTML.
@@ -74,6 +74,7 @@ class WhereCanWeGoReader(HTMLReader):
                 -'timestamp'(str): ISO formatted time string of when the scraping was executed
         """
         event_results=self.get_event_results(content)
+        print(len(event_results))
         event_metadata = [
         {
             "domain": self.domain,
@@ -87,14 +88,16 @@ class WhereCanWeGoReader(HTMLReader):
             "url": result.find("h2", class_="eventtitle")
                                    .find("a", id=re.compile("EventRepeater"))
                                    .get("href"),
-            "event_id": str(uuid4()), 
             "timestamp": format_timestamp()
         }
         for result in event_results
     ]
+        for e in event_metadata:
+            e["event_id"]=generate_event_id(e)
         return event_metadata
     
     def get_event_detail(self, event_dict:dict):
+
         """
         Extracts detailed information about an event from its HTML content.
 
@@ -125,5 +128,51 @@ class WhereCanWeGoReader(HTMLReader):
         event_details["sections"]=detail_sections
         return event_details
 
+class IslingtonLifeReader(HTMLReader):
+    domain="islingtonlife.london"
+    def get_event_results(self, content):
+        soup=self._parse_content(content)
+        event_results=soup.find_all("div", class_="card__item.card__item--wide")
+        return event_results
+    def get_event_metadata(self, content)->List[dict]:
+        """
+        Extracts metadata for an event from the HTML content.
 
+        The metadata includes:
+         -Event provider domain
+        - Event title
+        - Event description
+        - Event location
+        - URL for more information
+        -Event ID to match detail contents by
 
+        Returns:
+            List[dict]: A list of dictionaries containing the following keys:
+                - 'title' (str): The title of the event.
+                - 'description' (str): A truncated description of the event.
+                - 'location' (str): The location where the event will be held.
+                - 'url' (str): The URL linking to more information about the event.
+                - 'timestamp'(str): ISO formatted time string of when the scraping was executed
+        """
+        event_results=self.get_event_results(content)
+        event_metadata = [
+        {
+            "domain": self.domain,
+            "title": result.find("h2", class_="eventtitle")
+                                .find("a", id=re.compile("EventRepeater"))
+                                .text.replace("\n", "").strip(),
+            "content": result.find("div", class_="description")
+                                 .text.replace("\n", "").replace("more >", "").strip(),
+            "location": result.find("div", class_="VenueLine")
+                              .text.replace("\n", "").strip(),
+            "url": result.find("h2", class_="eventtitle")
+                                   .find("a", id=re.compile("EventRepeater"))
+                                   .get("href"),
+            "timestamp": format_timestamp()
+        }
+        for result in event_results
+    ]
+        for e in event_metadata:
+            e["event_id"]=generate_event_id(e)
+        return event_metadata
+   

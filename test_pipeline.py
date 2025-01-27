@@ -3,21 +3,29 @@ import time
 from agent import EventInfoExtractionAgent
 from get_data import get_tavily_dset, get_where_can_we_go_dset
 from utils import format_timestamp
-postcode="N19QZ"
+from dotenv import load_dotenv
+import os
+load_dotenv()
+postcode=os.getenv("POSTCODE")
+client=os.getenv("CLIENT_NAME")
 miles=2
 query={
     "postcode":postcode, 
     "miles":miles
 }
-client="PEABODY"
+# test run of the full pipeline
 start_time=time.time()
 wcwg_results=get_where_can_we_go_dset(query=query)
+print(len(wcwg_results))
 tavily_results=get_tavily_dset(query=query)
+print(len(tavily_results))
 print("Scraping complete")
 final_list=tavily_results+wcwg_results
+# TO-DO save to db here
+# TO-DO add llm text summary?
 print(f"Total search results: {len(final_list)}")
 extract_agent=EventInfoExtractionAgent()
-for input in final_list:
+for input in final_list[:15]:
     input_copy = input.copy()
     input_copy["text"] = json.dumps(input_copy)
     formatted_input = f"""

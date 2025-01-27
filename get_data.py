@@ -1,23 +1,18 @@
 from read_html import WhereCanWeGoReader
 from read_search_results import SearchResultReader
-from search import WhereCanWeGoSearch, TavilySearch
+from search import WhereCanWeGoSearch, TavilySearch, IslingtonLifeSearch
 from utils import validate_query, get_search_api_keys
 from typing import List
-
-
-postcode="N19QZ"
-miles=2
-
 
 
 def get_where_can_we_go_dset(query:dict)->List[dict]:
     validate_query(query, required_keys=['postcode', 'miles'])
     searcher=WhereCanWeGoSearch()
+    reader=WhereCanWeGoReader()
     url=searcher.create_request_url(query['postcode'], {"miles":query['miles']})
     html_content=searcher.run_search(url)
-
-    reader=WhereCanWeGoReader()
     event_metadata=reader.get_event_metadata(content=html_content)
+    print(len(event_metadata))
     event_detail_html_list=searcher.fetch_event_details(event_metadata)
     event_details = []
     for d in event_detail_html_list:
@@ -29,7 +24,7 @@ def get_where_can_we_go_dset(query:dict)->List[dict]:
             event['event_detail'] = matching_event_detail
     return event_metadata
 
-def get_tavily_dset(query:dict):
+def get_tavily_dset(query:dict)->List[dict]:
     api_keys=get_search_api_keys()
     validate_query(query, required_keys=['postcode'])
     searcher=TavilySearch(api_key=api_keys["tavily"])
@@ -40,4 +35,14 @@ def get_tavily_dset(query:dict):
     search_results=search_result_reader.scrape_results()
     return search_results
 
+def get_islington_dset(query:dict)->List[dict]:
+    validate_query(query, required_keys=['postcode'])
+    if query['postcode']!="N19QZ":
+        raise ValueError(f"Wrong scraping pipeline initialized for {query['postcode']}")
+    searcher=IslingtonLifeSearch()
+    url=searcher.create_request_url()
+    html_content=searcher.run_search(url)
+    print(html_content)
+# query={'postcode':"N19QZ"}
+# get_islington_dset(query)
 # create some executor interface that runs this and adds the client & postcode as well

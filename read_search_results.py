@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse
 from uuid import uuid4
-from utils import format_timestamp
+from utils import format_timestamp, generate_event_id
 class SearchResultReader:
     def __init__(self, search_results):
         self.search_results=search_results
@@ -37,7 +37,8 @@ class SearchResultReader:
             }
             for future in as_completed(futures):  
                 search_result = futures[future]  
-                search_result["event_id"] = str(uuid4())
+                search_result
+                search_result["event_id"] = generate_event_id(search_result)
                 search_result["domain"] = urlparse(search_result['url']).netloc
                 search_result["timestamp"] = format_timestamp()
                 search_result.pop("score", None)
