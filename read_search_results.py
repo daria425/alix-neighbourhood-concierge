@@ -46,8 +46,6 @@ class SearchResultReader:
                     extracted_content = future.result()
                     cleaned_content = self._get_clean_text(content=extracted_content)
                     search_result["content"] = cleaned_content if cleaned_content != '' else search_result['content']
-
-
                 except Exception as e:
                     print(f"Error processing URL {search_result['url']}: {e}")
                     search_result["error"] = str(e)
