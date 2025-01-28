@@ -1,9 +1,9 @@
-from read_html import WhereCanWeGoReader
+from read_html import WhereCanWeGoReader, IslingtonLifeReader
 from read_search_results import SearchResultReader
 from search import WhereCanWeGoSearch, TavilySearch, IslingtonLifeSearch
 from utils import validate_query, get_search_api_keys
 from typing import List
-
+import json
 
 def get_where_can_we_go_dset(query:dict)->List[dict]:
     validate_query(query, required_keys=['postcode', 'miles'])
@@ -12,7 +12,6 @@ def get_where_can_we_go_dset(query:dict)->List[dict]:
     url=searcher.create_request_url(query['postcode'], {"miles":query['miles']})
     html_content=searcher.run_search(url)
     event_metadata=reader.get_event_metadata(content=html_content)
-    print(len(event_metadata))
     event_detail_html_list=searcher.fetch_event_details(event_metadata)
     event_details = []
     for d in event_detail_html_list:
@@ -40,9 +39,26 @@ def get_islington_dset(query:dict)->List[dict]:
     if query['postcode']!="N19QZ":
         raise ValueError(f"Wrong scraping pipeline initialized for {query['postcode']}")
     searcher=IslingtonLifeSearch()
+    reader=IslingtonLifeReader()
     url=searcher.create_request_url()
     html_content=searcher.run_search(url)
-    print(html_content)
-# query={'postcode':"N19QZ"}
-# get_islington_dset(query)
+    if isinstance(html_content, dict) and html_content.get("error"):
+        return []
+    event_metadata=reader.get_event_metadata(content=html_content)
+    event_detail_html_list=searcher.fetch_event_details(event_metadata)
+    event_details = []
+    for d in event_detail_html_list:
+        event_detail = reader.get_event_detail(d)
+        event_details.append(event_detail)
+    for event in event_metadata:
+        matching_event_detail = next((detail for detail in event_details if detail['event_id'] == event['event_id']), None)
+        if matching_event_detail:
+            event['event_detail'] = matching_event_detail
+    print(event_metadata[0])
+    return event_metadata
+    
+query={'postcode':"N19QZ"}
+dset=get_islington_dset(query)
+with open("data/json/islingtonlife_sample_results.json", "w") as f:
+    f.write(json.dumps(dset))
 # create some executor interface that runs this and adds the client & postcode as well

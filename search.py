@@ -76,6 +76,7 @@ class HTMLSearch(ABC):
             return {"error": f"Request error occurred: {req_err}"}
         except Exception as err:
             return {"error": f"An unexpected error occurred: {err}"}
+    
     @abstractmethod
     def create_request_url(self, postcode: str, params:dict=None):
         """
@@ -174,10 +175,18 @@ class IslingtonLifeSearch(HTMLSearch):
         event_id=event.get("event_id")
         if url and event_id:
             html_content=self.run_search(url, kwargs={})
+            if isinstance(html_content, dict) and html_content.get("error"):
+                return {
+                    "content":"",
+                    "error": True, 
+                    "event_id": event_id
+
+                }
             return {
                 "content": html_content, 
                 "event_id": event_id
             }
+        
         return {"error": "No URL/event id provided"}
     
     def fetch_event_details(self, event_metadata:List[dict]):
