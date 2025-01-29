@@ -53,12 +53,8 @@ class HTMLReader(ABC):
         raise NotImplementedError(
             "Subclasses must implement the `get_event_detail` method"
         )
-
-
-class WhereCanWeGoReader(HTMLReader):
-    domain = "wherecanwego.com"
-
-    def get_event_results(self, content) -> List[Tag]:
+    
+    def get_event_results(self, content:str, config:dict) -> List[Tag]:
         """
         Finds and returns all event result containers in the HTML.
 
@@ -66,10 +62,17 @@ class WhereCanWeGoReader(HTMLReader):
             list: A list of BeautifulSoup elements containing the event results.
         """
         soup = self._parse_content(content)
-        event_results = soup.find_all("div", class_="EventResults")
+        tag=config.get("tag", None)
+        filter_param = config["filter"].get("parameter", "class_")
+        filter_value = config["filter"].get("value", "")
+        event_results = soup.find_all(tag, **{filter_param: filter_value})
         return event_results
+    
 
-    def get_event_metadata(self, content) -> List[dict]:
+class WhereCanWeGoReader(HTMLReader):
+    domain = "wherecanwego.com"
+
+    def get_event_metadata(self, content: str, config: dict) -> List[dict]:
         """
         Extracts metadata for an event from the HTML content.
 
@@ -89,7 +92,7 @@ class WhereCanWeGoReader(HTMLReader):
                 - 'url' (str): The URL linking to more information about the event.
                 -'timestamp'(str): ISO formatted time string of when the scraping was executed
         """
-        event_results = self.get_event_results(content)
+        event_results = self.get_event_results(content, config)
         print(len(event_results))
         event_metadata = [
             {
@@ -149,11 +152,11 @@ class WhereCanWeGoReader(HTMLReader):
 class IslingtonLifeReader(HTMLReader):
     domain = "islingtonlife.london"
 
-    def get_event_results(self, content):
-        soup = self._parse_content(content)
-        event_results = soup.find_all("div", class_="card__item card__item--wide")
-        print(len(event_results))
-        return event_results
+    # def get_event_results(self, content):
+    #     soup = self._parse_content(content)
+    #     event_results = soup.find_all("div", class_="card__item card__item--wide")
+    #     print(len(event_results))
+    #     return event_results
 
     def get_event_metadata(self, content) -> List[dict]:
         """
