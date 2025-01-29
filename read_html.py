@@ -72,25 +72,37 @@ class HTMLReader(ABC):
 class WhereCanWeGoReader(HTMLReader):
     domain = "wherecanwego.com"
 
-    def get_event_metadata(self, content: str, config: dict) -> List[dict]:
+    def get_event_metadata(self, content: str, config: dict) -> List[dict]: 
+        # config={
+        # "tag":"div"
+        # "filter":{
+        # "parameter":"class_"
+        # "value": "EventResults"
+        #   }
+        # }
         """
-        Extracts metadata for an event from the HTML content.
+        Extracts metadata for events from the provided HTML content.
 
         The metadata includes:
-         -Event provider domain
+        - Event provider domain
         - Event title
         - Event description
-        - Event location
         - URL for more information
-        -Event ID to match detail contents by
+        - Event ID (generated based on event details)
+        - Timestamp of when the scraping was executed
+
+        Args:
+            content (str): The raw HTML content to be parsed.
+            config (dict): A dictionary specifying the tag and filters for locating event elements.
 
         Returns:
-            List[dict]: A list of dictionaries containing the following keys:
+            List[dict]: A list of dictionaries, each containing:
+                - 'domain' (str): The domain of the event provider.
                 - 'title' (str): The title of the event.
-                - 'description' (str): A truncated description of the event.
-                - 'location' (str): The location where the event will be held.
+                - 'content' (str): A truncated description of the event.
                 - 'url' (str): The URL linking to more information about the event.
-                -'timestamp'(str): ISO formatted time string of when the scraping was executed
+                - 'timestamp' (str): An ISO-formatted timestamp of the scraping time.
+                - 'event_id' (str): A unique identifier for the event.
         """
         event_results = self.get_event_results(content, config)
         print(len(event_results))
@@ -104,9 +116,6 @@ class WhereCanWeGoReader(HTMLReader):
                 "content": result.find("div", class_="description")
                 .text.replace("\n", "")
                 .replace("more >", "")
-                .strip(),
-                "location": result.find("div", class_="VenueLine")
-                .text.replace("\n", "")
                 .strip(),
                 "url": result.find("h2", class_="eventtitle")
                 .find("a", id=re.compile("EventRepeater"))
@@ -151,14 +160,14 @@ class WhereCanWeGoReader(HTMLReader):
 
 class IslingtonLifeReader(HTMLReader):
     domain = "islingtonlife.london"
-
-    # def get_event_results(self, content):
-    #     soup = self._parse_content(content)
-    #     event_results = soup.find_all("div", class_="card__item card__item--wide")
-    #     print(len(event_results))
-    #     return event_results
-
-    def get_event_metadata(self, content) -> List[dict]:
+    def get_event_metadata(self, content:str, config:dict) -> List[dict]:
+        # config={
+        # "tag":"div"
+        # "filter":{
+        # "parameter":"class_"
+        # "value": "card__item card__item--wide"
+        #   }
+        # }
         """
         Extracts metadata for an event from the HTML content.
 
@@ -166,19 +175,21 @@ class IslingtonLifeReader(HTMLReader):
          -Event provider domain
         - Event title
         - Event description
-        - Event location
         - URL for more information
-        -Event ID to match detail contents by
+        - Event ID to match detail contents by
+
+        Args:
+            content (str): The raw HTML content to be parsed.
+            config (dict): A dictionary specifying the tag and filters for locating event elements.
 
         Returns:
             List[dict]: A list of dictionaries containing the following keys:
                 - 'title' (str): The title of the event.
                 - 'description' (str): A truncated description of the event.
-                - 'location' (str): The location where the event will be held.
                 - 'url' (str): The URL linking to more information about the event.
                 - 'timestamp'(str): ISO formatted time string of when the scraping was executed
         """
-        event_results = self.get_event_results(content)
+        event_results = self.get_event_results(content, config)
         event_metadata = [
             {
                 "domain": self.domain,
@@ -231,16 +242,39 @@ class IslingtonLifeReader(HTMLReader):
 
 class TrinityIslingtonReader(HTMLReader):
     domain = "trinityislington.org"
+    def get_event_metadata(self, content:str, config:dict):
+        # config={
+        # "tag":"div"
+        # "filter":{
+        # "parameter":"class_"
+        # "value": "image-card sqs-dynamic-text-container"
+        #   }
+        # }
+        """
+        Extracts metadata for events from the provided HTML content.
 
-    def get_event_results(self, content):
-        soup = self._parse_content(content)
-        event_results = soup.find_all(
-            "div", class_="image-card sqs-dynamic-text-container"
-        )
-        return event_results
+        The metadata includes:
+        - Event provider domain
+        - Event title
+        - Event description
+        - URL for more information
+        - Event ID (generated based on event details)
+        - Timestamp of when the scraping was executed
 
-    def get_event_metadata(self, content):
-        event_results = self.get_event_results(content)
+        Args:
+            content (str): The raw HTML content to be parsed.
+            config (dict): A dictionary specifying the tag and filters for locating event elements.
+
+        Returns:
+            List[dict]: A list of dictionaries, each containing:
+                - 'domain' (str): The domain of the event provider.
+                - 'title' (str): The title of the event.
+                - 'content' (str): A truncated description of the event.
+                - 'url' (str): The URL linking to more information about the event.
+                - 'timestamp' (str): An ISO-formatted timestamp of the scraping time.
+                - 'event_id' (str): A unique identifier for the event.
+        """
+        event_results = self.get_event_results(content, config)
         event_metadata = [
             {
                 "domain": self.domain,
@@ -275,14 +309,39 @@ class TrinityIslingtonReader(HTMLReader):
 
 class Centre404Reader(HTMLReader):
     domain="centre404.org.uk"
-    def get_event_results(self, content):
-        soup = self._parse_content(content)
-        event_results = soup.find_all(
-            "div", class_="news-post clearfix"
-        )
-        return event_results
-    def get_event_metadata(self, content):
-        event_results = self.get_event_results(content)
+    def get_event_metadata(self, content:str, config:dict):
+        # config={
+        # "tag":"div"
+        # "filter":{
+        # "parameter":"class_"
+        # "value": "news-post clearfix"
+        #   }
+        # }
+        """
+        Extracts metadata for events from the provided HTML content.
+
+        The metadata includes:
+        - Event provider domain
+        - Event title
+        - Event description
+        - URL for more information
+        - Event ID (generated based on event details)
+        - Timestamp of when the scraping was executed
+
+        Args:
+            content (str): The raw HTML content to be parsed.
+            config (dict): A dictionary specifying the tag and filters for locating event elements.
+
+        Returns:
+            List[dict]: A list of dictionaries, each containing:
+                - 'domain' (str): The domain of the event provider.
+                - 'title' (str): The title of the event.
+                - 'content' (str): A truncated description of the event.
+                - 'url' (str): The URL linking to more information about the event.
+                - 'timestamp' (str): An ISO-formatted timestamp of the scraping time.
+                - 'event_id' (str): A unique identifier for the event.
+        """
+        event_results = self.get_event_results(content, config)
         event_metadata = [
             {
                 "domain": self.domain,
