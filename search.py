@@ -210,9 +210,62 @@ class TrinityIslingtonSearch(HTMLSearch):
     def create_request_url(self):
         return self.base_url
     
+class Centre404Search(HTMLSearch):
+    base_url="https://centre404.org.uk/blog/"
+    def create_request_url(self):
+        return self.base_url
+    def _fetch_event(self,event:str)->dict:
+        """
+        Fetches HTML content for an individual event.
+
+        Args:
+        ------
+            event (dict): A dictionary containing event metadata, including a `url`.
+
+        Returns:
+        --------
+        dict: {
+        html_content: The response from the `url`, 
+        event_id: ID of the event passed in
+        } or an error message.
+        """
+        url=event.get("url")
+        event_id=event.get("event_id")
+        if url and event_id:
+            html_content=self.run_search(url, kwargs={})
+            if isinstance(html_content, dict) and html_content.get("error"):
+                return {
+                    "content":"",
+                    "error": True, 
+                    "event_id": event_id
+
+                }
+            return {
+                "content": html_content, 
+                "event_id": event_id
+            }
+        
+        return {"error": "No URL/event id provided"}
     
+    def fetch_event_details(self, event_metadata:List[dict]):
+        """
+        Fetches detailed HTML content for a list of events concurrently.
 
+        Args:
+        ------
+            event_metadata (List[dict]): A list of dictionaries containing event metadata.
 
+        Returns:
+        --------
+        List[dict]: A list of responses from the `url` of the events.
+        """
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self._fetch_event, event) for event in event_metadata]
+            return [future.result() for future in futures] 
+        
+#TO-DO probs extract_fetch event and fetch_event_details into class method
+    
+        
 
         
 

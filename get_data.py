@@ -1,6 +1,6 @@
-from read_html import WhereCanWeGoReader, IslingtonLifeReader, TrinityIslingtonReader
+from read_html import WhereCanWeGoReader, IslingtonLifeReader, TrinityIslingtonReader, Centre404Reader
 from read_search_results import SearchResultReader
-from search import WhereCanWeGoSearch, TavilySearch, IslingtonLifeSearch, TrinityIslingtonSearch
+from search import WhereCanWeGoSearch, TavilySearch, IslingtonLifeSearch, TrinityIslingtonSearch, Centre404Search
 from utils import validate_query, get_search_api_keys
 from typing import List
 import json
@@ -70,11 +70,30 @@ def get_trinity_inslington_dset(query: dict)->List[dict]:
         return []
     event_metadata=reader.get_event_metadata(html_content)
     return event_metadata
-    
-query={'postcode':"N19QZ"}
-dset=get_trinity_inslington_dset(query)
 
-with open("data/json/trinity_islington_sample_results.json", "w") as f:
-    f.write(json.dumps(dset))
+def get_centre_404_dset(query:dict)->List[dict]:
+    validate_query(query, required_keys=['postcode'])
+    if query['postcode']!="N19QZ":
+        raise ValueError(f"Wrong scraping pipeline initialized for {query['postcode']}")
+    searcher=Centre404Search()
+    reader=Centre404Reader()
+    url=searcher.create_request_url()
+    html_content=searcher.run_search(url)
+    if isinstance(html_content, dict) and html_content.get("error"):
+        return []
+    event_metadata=reader.get_event_metadata(html_content)
+    print(event_metadata)
+    
+query={"postcode":"N19QZ"}
+get_centre_404_dset(query)
+
+    
+
+
+
+    
+
+
+
 
 # create some executor interface that runs this and adds the client & postcode as well
