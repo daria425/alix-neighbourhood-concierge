@@ -205,3 +205,45 @@ class IslingtonLifeReader(HTMLReader):
                 detail_sections.append(section_content)
         event_details["sections"]=detail_sections
         return event_details
+
+class TrinityIslingtonReader(HTMLReader):
+    domain="trinityislington.org"
+    def get_event_results(self, content):
+        soup=self._parse_content(content)
+        event_results=soup.find_all("div", class_="image-card sqs-dynamic-text-container")
+        return event_results
+    def get_event_metadata(self, content):
+        event_results=self.get_event_results(content)
+        event_metadata = [
+        {
+            "domain": self.domain,
+            "title": result.find("div", class_="image-title-wrapper")
+                                .text.replace("\n", "").strip(),
+            "url": f"https://{self.domain}/whats-happening",
+            "timestamp": format_timestamp(),
+            "event_detail": self.get_event_detail(result)
+        }
+        for result in event_results
+    ]
+        for e in event_metadata:
+            unique_id=generate_event_id(e)
+            e["event_id"]=unique_id
+            e['event_detail']['event_id']=unique_id
+        return event_metadata
+        
+    def get_event_detail(self, event_result: Tag):
+        detail_sections=[]
+        event_details={}
+        info_containers=event_result.find("div", class_="image-subtitle sqs-dynamic-text").find_all("p")
+        for i in range(0, len(info_containers)):
+            text_content=info_containers[i].text
+            links=[link.get("href") for link in info_containers[i].find_all("a")]
+            section_content={
+                "content": text_content, 
+                "links":links
+            }
+            detail_sections.append(section_content)
+        event_details["sections"]=detail_sections
+        return event_details
+
+        

@@ -205,7 +205,13 @@ class IslingtonLifeSearch(HTMLSearch):
             futures = [executor.submit(self._fetch_event, event) for event in event_metadata]
             return [future.result() for future in futures]
     
+class TrinityIslingtonSearch(HTMLSearch):
+    base_url="https://trinityislington.org/whats-happening"
+    def create_request_url(self):
+        return self.base_url
     
+    
+
 
 
         
