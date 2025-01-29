@@ -283,7 +283,7 @@ class Centre404Reader(HTMLReader):
         event_metadata = [
             {
                 "domain": self.domain,
-                "title": result.find("div", class_="title-bar clearfix")
+                "title": result.find("div", class_="title")
                 .get_text(strip=True),
                 "content": result.find("div", class_="short-description").get_text(strip=True),
                 "url": result.find("a", class_="read-more").get("href") ,
@@ -294,8 +294,23 @@ class Centre404Reader(HTMLReader):
         for e in event_metadata:
             e["event_id"] = generate_event_id(e)
         return event_metadata
-    def get_event_detail(self, content):
-        pass
+    def get_event_detail(self, event_dict:dict):
+        detail_sections = []
+        event_details = {"event_id": event_dict["event_id"]}
+        if event_dict["content"] != "":
+            soup = self._parse_content(event_dict["content"])
+            info_containers = soup.find(
+                "div", class_="copy-wrapper"
+            ).find_all("p")
+            for i in range(0, len(info_containers)):
+                text_content = info_containers[i].get_text()
+                links = [link.get("href") for link in info_containers[i].find_all("a")]
+                section_content = {"content": text_content, "links": links}
+                detail_sections.append(section_content)
+        print(detail_sections)
+        event_details["sections"] = detail_sections
+        return event_details
+        
         
         
 

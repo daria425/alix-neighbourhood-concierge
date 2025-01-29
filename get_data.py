@@ -82,10 +82,19 @@ def get_centre_404_dset(query:dict)->List[dict]:
     if isinstance(html_content, dict) and html_content.get("error"):
         return []
     event_metadata=reader.get_event_metadata(html_content)
-    print(event_metadata)
+    event_detail_html_list=searcher.fetch_event_details(event_metadata)
+    event_details=[]
+    for d in event_detail_html_list:
+        event_detail = reader.get_event_detail(d)
+        event_details.append(event_detail)
+    for event in event_metadata:
+        matching_event_detail = next((detail for detail in event_details if detail['event_id'] == event['event_id']), None)
+        if matching_event_detail:
+            event['event_detail'] = matching_event_detail
+    return event_metadata
     
-query={"postcode":"N19QZ"}
-get_centre_404_dset(query)
+    
+    
 
     
 
