@@ -93,7 +93,6 @@ class HTMLReader:
         Returns:
             dict: A dictionary containing detailed event information.
         """
-        print(event_dict)
         event_details = {"event_id": event_dict["event_id"]}
         detail_sections = []
 

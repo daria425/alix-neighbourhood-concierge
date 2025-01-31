@@ -1,9 +1,7 @@
 import re
-query_wherecanwego = {
+query_config_wherecanwego = {
     "request_config": {
         "website": "wherecanwego",
-        "postcode": "N19QZ",
-        "params": {"miles": 2},
     },
     "page_content_config": {
         "domain": "wherecanwego.com",
@@ -12,7 +10,7 @@ query_wherecanwego = {
             "filter": {
                 "parameter": "class_",
                 "value": "EventResults",
-            },  # Adjust based on actual structure
+            },  
         },
         "title": {
             "tag": "h2",
@@ -39,7 +37,7 @@ query_wherecanwego = {
     },
 }
 
-query_islignton = {
+query_config_islignton = {
     "request_config": {
         "website": "islingtonlife",
         "postcode": "N19QZ",
@@ -75,10 +73,9 @@ query_islignton = {
     }
 }
 
-query_centre404={
+query_config_centre404={
         "request_config": {
         "website": "centre404",
-        "postcode": "N19QZ",
     },
     "page_content_config":{
             "domain": "centre404.org.uk",

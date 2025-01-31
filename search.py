@@ -122,7 +122,6 @@ class HTMLSearch:
         """
         url = event.get("url")
         event_id = event.get("event_id")
-        print("url",url)
         if not url or not event_id:
             return {"error": "No URL/event id provided"}
 
