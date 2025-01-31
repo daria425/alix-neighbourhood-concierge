@@ -3,8 +3,10 @@ from bs4.element import Tag
 from utils import format_timestamp, generate_event_id
 from typing import List
 
-class HTMLReader():
-
+class HTMLReader:
+    def __init__(self, page_content_config:dict):
+        self.config=page_content_config
+    
     def _parse_content(self, content: str) -> BeautifulSoup:
         """
         Parses the provided HTML content into a BeautifulSoup object.
@@ -18,7 +20,7 @@ class HTMLReader():
 
         return BeautifulSoup(content, "html.parser")
     
-    def get_event_metadata(self, content: str, config:dict ) -> List[Tag]:
+    def get_event_metadata(self, content: str) -> List[Tag]:
         """
         Extracts common event metadata (title, description, URL).
         
@@ -31,13 +33,13 @@ class HTMLReader():
         Returns:
             dict: A dictionary containing the event's title, description, and URL.
         """
-        event_results=self.get_event_result_containers(content, config['container'])
-        title_config=config['title']
-        url_config=config['url']
-        description_config=config['content']
+        event_results=self._get_event_result_containers(content, self.config['container'])
+        title_config=self.config['title']
+        url_config=self.config['url']
+        description_config=self.config['content']
         event_metadata=[
              {
-                    "domain": config["domain"],
+                    "domain": self.config["domain"],
         "title": result.find(title_config.get("tag"), **{
             title_config["filter"].get("parameter", "class_"): title_config["filter"].get("value", "")
         }).get_text(strip=True) if result.find(title_config.get("tag"), **{
@@ -64,7 +66,7 @@ class HTMLReader():
         for e in event_metadata:
             e["event_id"] = generate_event_id(e)
         return event_metadata
-    def get_event_result_containers(self, content:str, config:dict) -> List[Tag]:
+    def _get_event_result_containers(self, content:str, config:dict) -> List[Tag]:
         """
         Finds and returns all event result containers in the HTML.
 
@@ -78,7 +80,7 @@ class HTMLReader():
         event_results = soup.find_all(tag, **{filter_param: filter_value})
         return event_results
     
-    def get_event_detail(self, event_dict: dict, config: dict):
+    def get_event_detail(self, event_dict: dict):
         """
         Extracts detailed information about an event from its HTML content using the provided config.
 
@@ -91,6 +93,7 @@ class HTMLReader():
         Returns:
             dict: A dictionary containing detailed event information.
         """
+        print(event_dict)
         event_details = {"event_id": event_dict["event_id"]}
         detail_sections = []
 
@@ -98,7 +101,7 @@ class HTMLReader():
             soup = self._parse_content(event_dict["content"])
 
             # Extract main container for details
-            details_config = config.get("details", {})
+            details_config = self.config.get("details", {})
             container_tag = details_config["container"]["tag"]
             container_filter = details_config["container"]["filter"]
 

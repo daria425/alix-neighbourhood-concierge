@@ -6,19 +6,6 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 input_file_path=os.getenv("SAMPLE_PDF_URI")
-# reader = PdfReader('data/pdf/sample_pdf1.pdf')
-# texts=""
-# for page in reader.pages:
-#     texts+=f"""
-# ----------
-# PAGE START
-# ----------
-# {page.extract_text()}
-# ----------
-# PAGE END
-# ----------
-# """
-# print(texts)
 
 prompt = """
 You are a very professional document information extraction specialist. 

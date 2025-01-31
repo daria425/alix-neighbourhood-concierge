@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse
-from uuid import uuid4
 from utils import format_timestamp, generate_event_id
 class SearchResultReader:
     def __init__(self, search_results):

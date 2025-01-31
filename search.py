@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import requests
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
-
+import logging
 class Search(ABC):
     base_url: str # Class attribute
     """
@@ -84,18 +84,25 @@ class HTMLSearch:
         return url
 
     def run_search(self, url, kwargs: dict=None):
-        if kwargs is None:
-            kwargs = {}
+        kwargs = kwargs or {}
+
         try:
-            response=requests.get(url, **kwargs)
+            response = requests.get(url, **kwargs)
             response.raise_for_status()
-            return response.text
+            return {"content": response.text}
+
         except requests.exceptions.HTTPError as http_err:
-            return {"error": f"HTTP error occurred: {http_err}", "status_code": response.status_code}
+            status_code = response.status_code if response else "Unknown"
+            logging.error(f"HTTP error for {url}: {http_err} (Status: {status_code})")
+            return {"error": f"HTTP error occurred: {http_err}", "status_code": status_code}
+
         except requests.exceptions.RequestException as req_err:
-            return {"error": f"Request error occurred: {req_err}"}
+            logging.error(f"Request error for {url}: {req_err}")
+            return {"error": f"Request error occurred: {req_err}", "status_code": None}
+
         except Exception as err:
-            return {"error": f"An unexpected error occurred: {err}"}
+            logging.exception(f"Unexpected error for {url}: {err}")
+            return {"error": f"An unexpected error occurred: {err}", "status_code": None}
 
         
     def _fetch_event(self,event:str)->dict:
@@ -109,19 +116,31 @@ class HTMLSearch:
         Returns:
         --------
         dict: {
-        html_content: The response from the `url`, 
-        event_id: ID of the event passed in
-        } or an error message.
+            "content": The response from the `url`, 
+            "event_id": ID of the event passed in,
+        } or an empty content string in case of an error.
         """
-        url=event.get("url")
-        event_id=event.get("event_id")
-        if url and event_id:
-            html_content=self.run_search(url, kwargs={})
+        url = event.get("url")
+        event_id = event.get("event_id")
+        print("url",url)
+        if not url or not event_id:
+            return {"error": "No URL/event id provided"}
+
+        response = self.run_search(url, kwargs={})
+        
+        if response.get("content"):
             return {
-                "content": html_content, 
+                "content": response["content"],
                 "event_id": event_id
             }
-        return {"error": "No URL/event id provided"}
+        status_code = response.get("status_code", "Unknown")
+        logging.warning(f"Error fetching event {event_id}: {response.get('error', '')} (Status: {status_code})")
+        
+        return {
+            "content": "",
+            "event_id": event_id
+        }
+
     
     def fetch_event_details(self, event_metadata:List[dict]):
         """
