@@ -1,13 +1,14 @@
 from read_html import HTMLReader
 from read_search_results import SearchResultReader
-from search import WhereCanWeGoSearch, TavilySearch, IslingtonLifeSearch, Centre404Search
+from search import HTMLSearch,TavilySearch
 from utils import validate_query, get_search_api_keys
 from typing import List
 import json
 
+# TO-DO pass in the configs
 def get_where_can_we_go_dset(query:dict)->List[dict]:
     validate_query(query, required_keys=['postcode', 'miles'])
-    searcher=WhereCanWeGoSearch()
+    searcher=HTMLSearch(website="wherecanwego")
     reader=HTMLReader()
     url=searcher.create_request_url(query['postcode'], {"miles":query['miles']})
     html_content=searcher.run_search(url)
@@ -40,7 +41,7 @@ def get_islington_life_dset(query:dict)->List[dict]:
     validate_query(query, required_keys=['postcode'])
     if query['postcode']!="N19QZ":
         raise ValueError(f"Wrong scraping pipeline initialized for {query['postcode']}")
-    searcher=IslingtonLifeSearch()
+    searcher=HTMLSearch(website="islingtonlife")
     reader=HTMLReader()
     url=searcher.create_request_url()
     html_content=searcher.run_search(url)
@@ -62,7 +63,7 @@ def get_centre_404_dset(query:dict)->List[dict]:
     validate_query(query, required_keys=['postcode'])
     if query['postcode']!="N19QZ":
         raise ValueError(f"Wrong scraping pipeline initialized for {query['postcode']}")
-    searcher=Centre404Search()
+    searcher=HTMLSearch(website="centre404")
     reader=HTMLReader()
     url=searcher.create_request_url()
     html_content=searcher.run_search(url)

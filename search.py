@@ -54,11 +54,34 @@ class Search(ABC):
         """
         raise NotImplementedError("Subclasses must implement the `create_search_request` method")
 
-class HTMLSearch(ABC):
-    """
-    Abstract base class for getting HTML content of event listing websites
-    """
-    base_url: str
+class HTMLSearch:
+    def __init__(self, website: str):
+        self.website=website
+        self.base_url=self.get_base_url()
+        self._modify_url=self.get_modify_method()
+
+    def get_base_url(self)->str:
+        urls = {
+            "wherecanwego": "https://www.wherecanwego.com/whats-on/",
+            "islingtonlife": "https://islingtonlife.london/things-to-do/",
+            "trinityislington": "https://trinityislington.org/whats-happening",
+            "centre404": "https://centre404.org.uk/blog/",
+        }
+        return urls.get(self.website, "")
+    
+    def get_modify_method(self):
+        return getattr(self, f"_modify_{self.website}", lambda *args, **kwargs: self.base_url)
+
+    def create_request_url(self, *args, **kwargs):
+        return self._modify_url(*args, **kwargs)
+
+    def _modify_wherecanwego(self, postcode: str, params: dict = None):
+        url = f"{self.base_url}{postcode}?id=7"
+        if params:
+            for key, value in params.items():
+                if value is not None:
+                    url += f"&{key}={value}"
+        return url
 
     def run_search(self, url, kwargs: dict=None):
         if kwargs is None:
@@ -73,13 +96,8 @@ class HTMLSearch(ABC):
             return {"error": f"Request error occurred: {req_err}"}
         except Exception as err:
             return {"error": f"An unexpected error occurred: {err}"}
-    
-    @abstractmethod
-    def create_request_url(self, postcode: str, params:dict=None):
-        """
-        Creates a search request url to scrape (for event listing websites)
-        """
-        raise NotImplementedError("Subclasses must implement the `create_search_url` method")
+
+        
     def _fetch_event(self,event:str)->dict:
         """
         Fetches HTML content for an individual event.
@@ -121,47 +139,6 @@ class HTMLSearch(ABC):
             futures = [executor.submit(self._fetch_event, event) for event in event_metadata]
             return [future.result() for future in futures]
     
-class WhereCanWeGoSearch(HTMLSearch):
-    """
-    A concrete implementation of the HTMLSearch class for the WhereCanWeGo website.
-    """
-    base_url="https://www.wherecanwego.com/whats-on/"
-    def create_request_url(self, postcode:str, params:dict=None):
-        """
-        Creates a search URL for scraping a WhereCanWeGo webpage for a given postcode, adding additional parameters if they are provided.
-        
-        Args:
-        --------
-            postcode: The postcode to search for.
-            params: Additional query parameters (optional).
-        
-        Returns:
-        --------
-        str: A complete URL with query parameters.
-        
-        """
-
-        url=f"{self.base_url}{postcode}?id=7" #default to weekly events for now
-        if params:
-            for key, value in params.items():
-                if value is not None: 
-                    url += f"&{key}={value}"
-        return url
-
-class IslingtonLifeSearch(HTMLSearch):
-    base_url="https://islingtonlife.london/things-to-do/"
-    def create_request_url(self):
-        return self.base_url
-    
-class TrinityIslingtonSearch(HTMLSearch):
-    base_url="https://trinityislington.org/whats-happening"
-    def create_request_url(self):
-        return self.base_url
-    
-class Centre404Search(HTMLSearch):
-    base_url="https://centre404.org.uk/blog/"
-    def create_request_url(self):
-        return self.base_url
     
 class TavilySearch(Search):
     """
