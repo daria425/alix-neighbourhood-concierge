@@ -2,14 +2,8 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from utils import format_timestamp, generate_event_id
 from typing import List
-from abc import ABC, abstractmethod
-import re
 
-class HTMLReader(ABC):
-    """
-    Absract base class for reading the HTML content of a page.
-    Defines the interface for parsing HTML content and returning event information.
-    """
+class HTMLReader():
 
     def _parse_content(self, content: str) -> BeautifulSoup:
         """
@@ -70,18 +64,6 @@ class HTMLReader(ABC):
         for e in event_metadata:
             e["event_id"] = generate_event_id(e)
         return event_metadata
-
-
-
-    @abstractmethod
-    def get_event_detail(self, content: str) -> List[Tag]:
-        """
-        Ensures that subclasses implement the `get_event_detail` method
-        """
-        raise NotImplementedError(
-            "Subclasses must implement the `get_event_detail` method"
-        )
-    
     def get_event_result_containers(self, content:str, config:dict) -> List[Tag]:
         """
         Finds and returns all event result containers in the HTML.
@@ -95,109 +77,41 @@ class HTMLReader(ABC):
         filter_value = config["filter"].get("value", "")
         event_results = soup.find_all(tag, **{filter_param: filter_value})
         return event_results
-
-class WhereCanWeGoReader(HTMLReader):
-
-    def get_event_detail(self, event_dict: dict):
+    
+    def get_event_detail(self, event_dict: dict, config: dict):
         """
-        Extracts detailed information about an event from its HTML content.
+        Extracts detailed information about an event from its HTML content using the provided config.
 
         Args:
-            event_dict (dict): A dictionary containing the following keys:
+            event_dict (dict): A dictionary containing:
                 - 'event_id' (str): The unique identifier for the event.
                 - 'content' (str): The raw HTML content of the event details page.
+            config (dict): Configuration dictionary defining how to extract details.
 
         Returns:
-            dict: A dictionary containing detailed information about the event, with the following structure:
-                - 'event_id' (str): The unique identifier for the event.
-                - 'sections' (list): A list of sections, where each section is a dictionary containing:
-                    - 'content' (str): The textual content of the section.
-                    - 'links' (list): A list of hyperlinks found within the section.
+            dict: A dictionary containing detailed event information.
         """
         event_details = {"event_id": event_dict["event_id"]}
         detail_sections = []
-        if event_dict["content"] != "":
+
+        if event_dict["content"]:
             soup = self._parse_content(event_dict["content"])
-            info_containers = soup.find_all("div", class_="spacing")
-            for i in range(0, len(info_containers)):
-                text_content = info_containers[i].text
-                links = [link.get("href") for link in info_containers[i].find_all("a")]
-                section_content = {"content": text_content, "links": links}
-                detail_sections.append(section_content)
+
+            # Extract main container for details
+            details_config = config.get("details", {})
+            container_tag = details_config["container"]["tag"]
+            container_filter = details_config["container"]["filter"]
+
+            details_container = soup.find(container_tag, **{container_filter.get("parameter", "class_"): container_filter.get("value","")})
+
+            if details_container:
+                section_tag = details_config["sections"]["tag"]
+                section_filter=details_config["sections"]["filter"]
+                info_containers = details_container.find_all(section_tag, **{section_filter.get("parameter", "class_"): section_filter.get("value","")})
+                for section in info_containers:
+                    text_content = section.get_text(strip=True)
+                    links = [link.get("href") for link in section.find_all("a")]
+                    detail_sections.append({"content": text_content, "links": links})
+
         event_details["sections"] = detail_sections
         return event_details
-
-class TrinityIslingtonReader(HTMLReader):
-
-    def get_event_detail(self, event_result: Tag):
-        detail_sections = []
-        event_details = {}
-        info_containers = event_result.find(
-            "div", class_="image-subtitle sqs-dynamic-text"
-        ).find_all("p")
-        for i in range(0, len(info_containers)):
-            text_content = info_containers[i].text
-            links = [link.get("href") for link in info_containers[i].find_all("a")]
-            section_content = {"content": text_content, "links": links}
-            detail_sections.append(section_content)
-        event_details["sections"] = detail_sections
-        return event_details
-
-class Centre404Reader(HTMLReader):
-    def get_event_detail(self, event_dict:dict):
-        detail_sections = []
-        event_details = {"event_id": event_dict["event_id"]}
-        if event_dict["content"] != "":
-            soup = self._parse_content(event_dict["content"])
-            info_containers = soup.find(
-                "div", class_="copy-wrapper"
-            ).find_all("p")
-            for i in range(0, len(info_containers)):
-                text_content = info_containers[i].get_text()
-                links = [link.get("href") for link in info_containers[i].find_all("a")]
-                section_content = {"content": text_content, "links": links}
-                detail_sections.append(section_content)
-        print(detail_sections)
-        event_details["sections"] = detail_sections
-        return event_details
-        
-        
-
-class IslingtonLifeReader(HTMLReader):
-    domain = "islingtonlife.london"
-
-    def get_event_detail(self, event_dict: dict):
-        """
-        Extracts detailed information about an event from its HTML content.
-
-        Args:
-            event_dict (dict): A dictionary containing the following keys:
-                - 'event_id' (str): The unique identifier for the event.
-                - 'content' (str): The raw HTML content of the event details page.
-
-        Returns:
-            dict: A dictionary containing detailed information about the event, with the following structure:
-                - 'event_id' (str): The unique identifier for the event.
-                - 'sections' (list): A list of sections, where each section is a dictionary containing:
-                    - 'content' (str): The textual content of the section.
-                    - 'links' (list): A list of hyperlinks found within the section.
-        """
-        detail_sections = []
-        event_details = {"event_id": event_dict["event_id"]}
-        if event_dict["content"] != "":
-            soup = self._parse_content(event_dict["content"])
-            info_containers = soup.find(
-                "div", class_="entry__body__container"
-            ).find_all("p")
-            for i in range(0, len(info_containers)):
-                text_content = info_containers[i].text
-                links = [link.get("href") for link in info_containers[i].find_all("a")]
-                section_content = {"content": text_content, "links": links}
-                detail_sections.append(section_content)
-        event_details["sections"] = detail_sections
-        return event_details
-
-
-
-        
-
