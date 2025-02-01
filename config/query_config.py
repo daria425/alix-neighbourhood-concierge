@@ -2,6 +2,7 @@ import re
 query_config_wherecanwego = {
     "request_config": {
         "website": "wherecanwego",
+        "website_type":"static"
     },
     "page_content_config": {
         "domain": "wherecanwego.com",
@@ -40,7 +41,7 @@ query_config_wherecanwego = {
 query_config_islignton = {
     "request_config": {
         "website": "islingtonlife",
-        "postcode": "N19QZ",
+        "website_type":"static"
     },
     "page_content_config": {
          "domain": "islingtonlife.london",
@@ -76,6 +77,7 @@ query_config_islignton = {
 query_config_centre404={
         "request_config": {
         "website": "centre404",
+        "website_type":"static"
     },
     "page_content_config":{
             "domain": "centre404.org.uk",

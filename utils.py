@@ -61,3 +61,20 @@ def generate_event_id(event: dict) -> str:
     
     # Generate and return the MD5 hash
     return hashlib.md5(unique_string.encode()).hexdigest()
+
+def get_locator_str(locator_config:dict)->str:
+    """
+    Utility function to parse locator config and format into a string to use with Playwrights locator
+    
+    Args:
+        locator_config(dict): A configuration dictionary containing a 'tag' and 'filter' keys
+    """
+    filter_params=locator_config['filter']
+    tag=locator_config['tag']
+    selector_type=filter_params.get('parameter')
+    selector_value=filter_params.get('value')
+    if selector_type=='class':
+        return f"{tag}.{selector_value}"
+    elif selector_type=='id':
+        return f"{tag}#{selector_value}"
+
