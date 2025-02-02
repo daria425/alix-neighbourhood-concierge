@@ -1,33 +1,37 @@
 from read_html import HTMLReader
 from read_search_results import SearchResultReader
-from search import HTMLSearch, TavilySearch
+from search import HTMLSearch, TavilySearch, DynamicSearch
 from utils import validate_query, get_search_api_keys
 from typing import List
+import json
 
 def get_scraped_dset(query: dict) -> List[dict]:
     validate_query(query, required_keys=["request_config", "page_content_config"])
-    searcher = HTMLSearch(website=query["request_config"]["website"])
-    reader = HTMLReader(page_content_config=query["page_content_config"])
+    request_config=query['request_config']
+    page_content_config=query['page_content_config']
+    if request_config.get("website_type")=="dynamic":
+        searcher = DynamicSearch(website=request_config['website'])
+    else:
+        searcher=HTMLSearch(website=request_config['website'])
+    reader = HTMLReader(page_content_config=page_content_config)
     url = searcher.create_request_url(
-        query["request_config"].get("postcode", ""),
-        query["request_config"].get("params", {}),
+        request_config.get("postcode", ""),
+        request_config.get("params", {}),
     )
-    response = searcher.run_search(url)
+    if "locator" in page_content_config:
+        response = searcher.run_search(url, locator_config=page_content_config['locator'])
+    else: 
+        response=searcher.run_search(url)
     if response.get("error") or not response.get("content"):
         return []
-    event_metadata = reader.get_event_metadata(content=response['content'])
-    event_detail_html_list = searcher.fetch_event_details(event_metadata)
-    
-    # Extract event details
-    event_details = [reader.get_event_detail(d) for d in event_detail_html_list]
-    
-    # Create a dictionary for quick lookup
-    event_details_map = {detail["event_id"]: detail for detail in event_details}
-    
-    # Match event details efficiently
-    for event in event_metadata:
-        event["event_detail"] = event_details_map.get(event["event_id"], None)
-        event['event_detail'].pop('event_id')
+    event_metadata = reader.get_event_metadata(content=response['content'], include_event_details=request_config['include_event_details'])
+    if not any('event_details' in event_metadata_dict for event_metadata_dict in event_metadata):
+        event_detail_html_list = searcher.fetch_event_details(event_metadata)
+        event_details = [reader.get_event_detail(d) for d in event_detail_html_list]
+        event_details_map = {detail["event_id"]: detail for detail in event_details}
+        for event in event_metadata:
+            event["event_detail"] = event_details_map.get(event["event_id"], None)
+            event['event_detail'].pop('event_id')
     return event_metadata
 
 def get_tavily_dset(query: dict) -> List[dict]:
@@ -83,10 +87,59 @@ eventbrite_config={
     } 
 }
 # reader=HTMLReader(page_content_config=eventbrite_config['page_content_config'])
-# with open("eventbrite_html.html") as f:
+# with open("data/eventbrite_html.html") as f:
 #     content=f.read()
-# mtdt=reader.get_event_metadata(content, get_results_from_container=True)
+# mtdt=reader.get_event_metadata(content, include_event_details=True)
 # for m in mtdt:
 #     print(m['event_details'])
-# #     print(m['content'])
-# #     # print(details)
+# with open("data/json/eventbrite_results.json","w") as f:
+#     f.write(json.dumps(mtdt))
+    # print(details)
+
+query={
+    "postcode":"N19QZ", 
+    "params": {"miles":2}
+}
+query_config_gardenclassroom={
+     "request_config": {
+        "website": "the-garden-classroom-76146096453",
+        "website_type":"dynamic", 
+        'include_event_details':True
+    },
+     "page_content_config":{
+            "domain": "eventbrite.co.uk",
+            "locator":{
+"selector": "h3.Typography_root__487rx"
+            },
+    "container": {
+        "selector":"div[data-testid='organizer-profile__future-events'] div.Container_root__4i85v.NestedActionContainer_root__1jtfr.event-card" # Adjust based on actual structure
+    },
+    "title": {
+        "tag": "h3",
+        "filter": {"parameter": "class_", "value": "Typography_root__487rx"}
+    },
+    "content": {
+        "tag": "section",
+        "filter": {"parameter": "class_", "value": "event-card-details"}
+    },
+    "url": {
+        "tag": "a",
+        "filter": {"parameter": "class_", "value": "event-card-link"}
+    }, 
+    "details": {
+        "container": {
+            "tag": "section",
+            "filter": {"parameter": "class_", "value": "event-card-details"}
+        },
+        "sections": {
+            "tag": "p",
+            "filter": {}
+        }
+    }
+    } 
+}
+query_config_gardenclassroom['request_config']['postcode']=query['postcode']
+query_config_gardenclassroom['request_config']['params']=query['params']
+dset=get_scraped_dset(query_config_gardenclassroom)
+with open("eventbrite_the-garden-classroom-76146096453_results.json", "w") as f:
+    f.write(json.dumps(dset))

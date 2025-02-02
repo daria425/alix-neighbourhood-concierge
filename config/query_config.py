@@ -2,7 +2,8 @@ import re
 query_config_wherecanwego = {
     "request_config": {
         "website": "wherecanwego",
-        "website_type":"static"
+        "website_type":"static", 
+        'include_event_details':False
     },
     "page_content_config": {
         "domain": "wherecanwego.com",
@@ -41,7 +42,8 @@ query_config_wherecanwego = {
 query_config_islignton = {
     "request_config": {
         "website": "islingtonlife",
-        "website_type":"static"
+        "website_type":"static", 
+        'include_event_details':False
     },
     "page_content_config": {
          "domain": "islingtonlife.london",
@@ -77,7 +79,8 @@ query_config_islignton = {
 query_config_centre404={
         "request_config": {
         "website": "centre404",
-        "website_type":"static"
+        "website_type":"static", 
+        'include_event_details':False
     },
     "page_content_config":{
             "domain": "centre404.org.uk",
@@ -110,13 +113,17 @@ query_config_centre404={
     }
 }
 
-query_config_eventbrite={
+query_config_eventbrite_garden_classroom={
      "request_config": {
-        "website": "eventbrite",
-        "website_type":"dynamic"
+        "website": "the-garden-classroom-76146096453",
+        "website_type":"dynamic", 
+        'include_event_details':True
     },
      "page_content_config":{
             "domain": "eventbrite.co.uk",
+            "locator":{
+"selector": "h3.Typography_root__487rx"
+            },
     "container": {
         "selector":"div[data-testid='organizer-profile__future-events'] div.Container_root__4i85v.NestedActionContainer_root__1jtfr.event-card" # Adjust based on actual structure
     },

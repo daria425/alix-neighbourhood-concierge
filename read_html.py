@@ -50,7 +50,7 @@ class HTMLReader:
 
         return BeautifulSoup(content, "html.parser")
     
-    def get_event_metadata(self, content: str, get_results_from_container=False) -> List[Tag]:
+    def get_event_metadata(self, content: str, include_event_details=False) -> List[Tag]:
         """
         Extracts common event metadata (title, description, URL).
         
@@ -81,7 +81,7 @@ class HTMLReader:
         for e in event_metadata:
             id= generate_event_id(e)
             e['event_id']=id
-            if get_results_from_container:
+            if include_event_details:
                 event_dict={'event_id':id, "content":e['html']}
                 event_details=self.get_event_detail(event_dict)
                 e['event_details']=event_details

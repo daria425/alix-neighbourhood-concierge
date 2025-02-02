@@ -167,10 +167,8 @@ class HTMLSearch(WebsiteSearch):
 
     def _modify_wherecanwego(self, postcode: str, params: dict = None):
         url = f"{self.base_url}{postcode}?id=7"
-        if params:
-            for key, value in params.items():
-                if value is not None:
-                    url += f"&{key}={value}"
+        if "miles" in params:
+            url=f"{self.base_url}{postcode}?id=7&miles={params['miles']}" 
         return url
 
     def run_search(self, url, kwargs: dict = None):
@@ -206,11 +204,9 @@ class DynamicSearch(WebsiteSearch):
         super().__init__(website)
 
     def get_base_url(self):
-        urls = {"eventbrite": "https://www.eventbrite.co.uk/"}
+        urls = {"the-garden-classroom-76146096453": "https://www.eventbrite.co.uk/o/the-garden-classroom-76146096453"}
         return urls.get(self.website, "")
 
-    def _modify_eventbrite(self, organizer_id):
-        return f"{self.base_url}o/{organizer_id}"
 
     def run_search(self, url: str, locator_config: dict):
         with sync_playwright() as p:
@@ -218,7 +214,7 @@ class DynamicSearch(WebsiteSearch):
             page = browser.new_page()
             page.goto(url, wait_until="networkidle")
             try:
-                locator_str = get_locator_str(locator_config)
+                locator_str=locator_config['selector']
                 locator = page.locator(locator_str).first
                 locator.wait_for(state="attached", timeout=60000)
                 content = page.content()
@@ -233,11 +229,7 @@ class DynamicSearch(WebsiteSearch):
                 browser.close()
 
 locator_config={
-    "tag":"h3", 
-    "filter":{
-        "parameter": "class", "value": "Typography_root__487rx"
-    }
-}
+    "selector":"h3.Typography_root__487rx"}
 # organizer_id="the-garden-classroom-76146096453"
 # searcher=DynamicSearch(website="eventbrite")
 # url=searcher.create_request_url(organizer_id)
