@@ -220,7 +220,7 @@ class DynamicSearch(WebsiteSearch):
             try:
                 locator_str = get_locator_str(locator_config)
                 locator = page.locator(locator_str).first
-                locator.wait_for(state="attached", timeout=40000)
+                locator.wait_for(state="attached", timeout=60000)
                 content = page.content()
                 return {"content": content}
             except Exception as err:
@@ -232,7 +232,18 @@ class DynamicSearch(WebsiteSearch):
             finally:
                 browser.close()
 
-
+locator_config={
+    "tag":"h3", 
+    "filter":{
+        "parameter": "class", "value": "Typography_root__487rx"
+    }
+}
+# organizer_id="the-garden-classroom-76146096453"
+# searcher=DynamicSearch(website="eventbrite")
+# url=searcher.create_request_url(organizer_id)
+# html=searcher.run_search(url, locator_config)
+# with open("eventbrite_html.html", "w") as f:
+#     f.write(html['content'])
 class TavilySearch(APIWebSearch):
     """
     A concrete implementation of the Search class for the Tavily API.

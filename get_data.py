@@ -52,3 +52,41 @@ def get_tavily_dset(query: dict) -> List[dict]:
     return search_results
 
 
+eventbrite_config={
+     "page_content_config":{
+            "domain": "eventbrite.co.uk",
+    "container": {
+        "selector":"div[data-testid='organizer-profile__future-events'] div.Container_root__4i85v.NestedActionContainer_root__1jtfr.event-card" # Adjust based on actual structure
+    },
+    "title": {
+        "tag": "h3",
+        "filter": {"parameter": "class_", "value": "Typography_root__487rx"}
+    },
+    "content": {
+        "tag": "section",
+        "filter": {"parameter": "class_", "value": "event-card-details"}
+    },
+    "url": {
+        "tag": "a",
+        "filter": {"parameter": "class_", "value": "event-card-link"}
+    }, 
+    "details": {
+        "container": {
+            "tag": "section",
+            "filter": {"parameter": "class_", "value": "event-card-details"}
+        },
+        "sections": {
+            "tag": "p",
+            "filter": {}
+        }
+    }
+    } 
+}
+# reader=HTMLReader(page_content_config=eventbrite_config['page_content_config'])
+# with open("eventbrite_html.html") as f:
+#     content=f.read()
+# mtdt=reader.get_event_metadata(content, get_results_from_container=True)
+# for m in mtdt:
+#     print(m['event_details'])
+# #     print(m['content'])
+# #     # print(details)

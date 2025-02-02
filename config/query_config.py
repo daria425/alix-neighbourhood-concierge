@@ -110,3 +110,37 @@ query_config_centre404={
     }
 }
 
+query_config_eventbrite={
+     "request_config": {
+        "website": "eventbrite",
+        "website_type":"dynamic"
+    },
+     "page_content_config":{
+            "domain": "eventbrite.co.uk",
+    "container": {
+        "selector":"div[data-testid='organizer-profile__future-events'] div.Container_root__4i85v.NestedActionContainer_root__1jtfr.event-card" # Adjust based on actual structure
+    },
+    "title": {
+        "tag": "h3",
+        "filter": {"parameter": "class_", "value": "Typography_root__487rx"}
+    },
+    "content": {
+        "tag": "section",
+        "filter": {"parameter": "class_", "value": "event-card-details"}
+    },
+    "url": {
+        "tag": "a",
+        "filter": {"parameter": "class_", "value": "event-card-link"}
+    }, 
+    "details": {
+        "container": {
+            "tag": "section",
+            "filter": {"parameter": "class_", "value": "event-card-details"}
+        },
+        "sections": {
+            "tag": "p",
+            "filter": {}
+        }
+    }
+    } 
+}
