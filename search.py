@@ -4,7 +4,6 @@ from typing import List
 from playwright.sync_api import sync_playwright
 from concurrent.futures import ThreadPoolExecutor
 import logging
-from utils import get_locator_str
 
 
 class APIWebSearch(ABC):
@@ -205,21 +204,35 @@ class DynamicSearch(WebsiteSearch):
 
     def get_base_url(self):
         urls = {"the-garden-classroom-76146096453": "https://www.eventbrite.co.uk/o/the-garden-classroom-76146096453",
-                "praxis-17432513338":"https://www.eventbrite.co.uk/o/praxis-17432513338"
+                "praxis-17432513338":"https://www.eventbrite.co.uk/o/praxis-17432513338", 
+                "mary's_youth_club":"https://www.marys.org.uk/youthclub/timetable/"
                 }
         
         return urls.get(self.website, "")
 
 
     def run_search(self, url: str, locator_config: dict):
+        TIMEOUT=60000
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
             page.goto(url, wait_until="networkidle")
             try:
                 locator_str=locator_config['selector']
-                locator = page.locator(locator_str).first
-                locator.wait_for(state="attached", timeout=60000)
+                if 'iframe' in locator_str:
+                    frame=page.frame(url="https://calendar.google.com/calendar/embed?src=c_9e4cbbe056f4dfdc8cfca43b7064555e89eff0449021acb20e1eb7a2cd3fa383%40group.calendar.google.com&ctz=Europe%2FLondon")
+                    if frame:
+                        frame.wait_for_load_state("networkidle")
+                        locator = frame.locator("div.w48V4c").first  # Adjust based on actual content inside iframe
+                        locator.wait_for(state="attached", timeout=TIMEOUT)# Ensure element inside iframe is ready
+                    else:
+                        raise ValueError("Could not access iframe content.")
+
+                        
+
+                else:
+                    locator = page.locator(locator_str)
+                    locator.wait_for(state="attached", timeout=TIMEOUT)
                 content = page.content()
                 return {"content": content}
             except Exception as err:
@@ -276,3 +289,4 @@ class TavilySearch(APIWebSearch):
             ),  # Merge params if provided, otherwise default to an empty dict
         }
         return {"method": "POST", "url": self.base_url, "request_body": request_body}
+
