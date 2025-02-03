@@ -3,8 +3,9 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from bs4 import BeautifulSoup
 import re
+import logging
 from urllib.parse import urlparse
-from utils import format_timestamp, generate_event_id
+from app.utils.utils import format_timestamp, generate_event_id
 class SearchResultReader:
     def __init__(self, search_results):
         self.search_results=search_results
@@ -47,7 +48,7 @@ class SearchResultReader:
                     cleaned_content = self._get_clean_text(content=extracted_content)
                     search_result["content"] = cleaned_content if cleaned_content != '' else search_result['content']
                 except Exception as e:
-                    print(f"Error processing URL {search_result['url']}: {e}")
+                    logging.warning(f"Error processing URL {search_result['url']}: {e}")
                     search_result["error"] = str(e)
         
         return self.search_results

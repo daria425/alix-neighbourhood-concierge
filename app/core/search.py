@@ -168,6 +168,7 @@ class HTMLSearch(WebsiteSearch):
         url = f"{self.base_url}{postcode}?id=7"
         if "miles" in params:
             url=f"{self.base_url}{postcode}?id=7&miles={params['miles']}" 
+        print(url)
         return url
 
     def run_search(self, url, kwargs: dict = None):
@@ -219,20 +220,8 @@ class DynamicSearch(WebsiteSearch):
             page.goto(url, wait_until="networkidle")
             try:
                 locator_str=locator_config['selector']
-                if 'iframe' in locator_str:
-                    frame=page.frame(url="https://calendar.google.com/calendar/embed?src=c_9e4cbbe056f4dfdc8cfca43b7064555e89eff0449021acb20e1eb7a2cd3fa383%40group.calendar.google.com&ctz=Europe%2FLondon")
-                    if frame:
-                        frame.wait_for_load_state("networkidle")
-                        locator = frame.locator("div.w48V4c").first  # Adjust based on actual content inside iframe
-                        locator.wait_for(state="attached", timeout=TIMEOUT)# Ensure element inside iframe is ready
-                    else:
-                        raise ValueError("Could not access iframe content.")
-
-                        
-
-                else:
-                    locator = page.locator(locator_str)
-                    locator.wait_for(state="attached", timeout=TIMEOUT)
+                locator = page.locator(locator_str).first
+                locator.wait_for(state="attached", timeout=TIMEOUT)
                 content = page.content()
                 return {"content": content}
             except Exception as err:

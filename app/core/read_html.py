@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from utils import format_timestamp, generate_event_id
+from app.utils.utils import format_timestamp, generate_event_id
 from typing import List
 
 class HTMLReader:
@@ -85,7 +85,7 @@ class HTMLReader:
                 event_dict={'event_id':id, "content":e['html']}
                 event_details=self.get_event_detail(event_dict)
                 e['event_details']=event_details
-                e.pop('html')
+            e.pop('html')
         return event_metadata
     def _get_event_result_containers(self, content:str, config:dict) -> List[Tag]:
         """

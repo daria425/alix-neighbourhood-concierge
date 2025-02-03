@@ -3,5 +3,4 @@ __pycache__
 data/
 tests/
 *.html
-g_calendar.__py
-secrets/
+*_cache
