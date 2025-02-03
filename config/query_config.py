@@ -112,7 +112,44 @@ query_config_centre404={
     }
     }
 }
-
+query_config_praxis={
+     "request_config": {
+        "website": "praxis-17432513338",
+        "website_type":"dynamic", 
+        'include_event_details':True
+    },
+     "page_content_config":{
+            "domain": "eventbrite.co.uk",
+            "locator":{
+"selector": "h3.Typography_root__487rx"
+            },
+    "container": {
+        "selector":"div[data-testid='organizer-profile__future-events'] div.Container_root__4i85v.NestedActionContainer_root__1jtfr.event-card" # Adjust based on actual structure
+    },
+    "title": {
+        "tag": "h3",
+        "filter": {"parameter": "class_", "value": "Typography_root__487rx"}
+    },
+    "content": {
+        "tag": "section",
+        "filter": {"parameter": "class_", "value": "event-card-details"}
+    },
+    "url": {
+        "tag": "a",
+        "filter": {"parameter": "class_", "value": "event-card-link"}
+    }, 
+    "details": {
+        "container": {
+            "tag": "section",
+            "filter": {"parameter": "class_", "value": "event-card-details"}
+        },
+        "sections": {
+            "tag": "p",
+            "filter": {}
+        }
+    }
+    } 
+}
 query_config_eventbrite_garden_classroom={
      "request_config": {
         "website": "the-garden-classroom-76146096453",

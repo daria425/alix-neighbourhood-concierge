@@ -2,7 +2,7 @@ import json
 import time
 from agent import EventInfoExtractionAgent
 from get_data import get_tavily_dset, get_scraped_dset
-from config.query_config import query_config_centre404, query_config_islignton, query_config_wherecanwego
+from config.query_config import query_config_centre404, query_config_islignton, query_config_wherecanwego, query_config_eventbrite_garden_classroom, query_config_praxis
 from utils import format_timestamp
 from itertools import chain
 from dotenv import load_dotenv
@@ -15,7 +15,7 @@ query={
     "postcode":postcode, 
     "params": {"miles":miles}
 }
-configs=[query_config_islignton, query_config_centre404, query_config_wherecanwego]
+configs=[query_config_islignton, query_config_centre404, query_config_wherecanwego, query_config_eventbrite_garden_classroom, query_config_praxis]
 scraped_data_list=[]
 start_time=time.time()
 for config in configs:
@@ -36,8 +36,7 @@ final_data={
     "execution_time": f"{execution_time:.2f}", 
     "data":final_list
 }
-with open("data/json/sample_results.json", "w") as f:
-    f.write(json.dumps(final_data))
+
 # # test run of the full pipeline
 # start_time=time.time()
 # tavily_results=get_tavily_dset(query=query)

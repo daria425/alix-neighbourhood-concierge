@@ -1,7 +1,7 @@
 from read_html import HTMLReader
 from read_search_results import SearchResultReader
 from search import HTMLSearch, TavilySearch, DynamicSearch
-from utils import validate_query, get_search_api_keys
+from utils import validate_query, get_search_api_keys, remove_duplicates
 from typing import List
 import json
 
@@ -31,8 +31,8 @@ def get_scraped_dset(query: dict) -> List[dict]:
         event_details_map = {detail["event_id"]: detail for detail in event_details}
         for event in event_metadata:
             event["event_detail"] = event_details_map.get(event["event_id"], None)
-            event['event_detail'].pop('event_id')
-    return event_metadata
+    dset=remove_duplicates(event_metadata, 'event-id')
+    return dset
 
 def get_tavily_dset(query: dict) -> List[dict]:
     api_keys = get_search_api_keys()
@@ -86,60 +86,6 @@ eventbrite_config={
     }
     } 
 }
-# reader=HTMLReader(page_content_config=eventbrite_config['page_content_config'])
-# with open("data/eventbrite_html.html") as f:
-#     content=f.read()
-# mtdt=reader.get_event_metadata(content, include_event_details=True)
-# for m in mtdt:
-#     print(m['event_details'])
-# with open("data/json/eventbrite_results.json","w") as f:
-#     f.write(json.dumps(mtdt))
-    # print(details)
 
-query={
-    "postcode":"N19QZ", 
-    "params": {"miles":2}
-}
-query_config_gardenclassroom={
-     "request_config": {
-        "website": "the-garden-classroom-76146096453",
-        "website_type":"dynamic", 
-        'include_event_details':True
-    },
-     "page_content_config":{
-            "domain": "eventbrite.co.uk",
-            "locator":{
-"selector": "h3.Typography_root__487rx"
-            },
-    "container": {
-        "selector":"div[data-testid='organizer-profile__future-events'] div.Container_root__4i85v.NestedActionContainer_root__1jtfr.event-card" # Adjust based on actual structure
-    },
-    "title": {
-        "tag": "h3",
-        "filter": {"parameter": "class_", "value": "Typography_root__487rx"}
-    },
-    "content": {
-        "tag": "section",
-        "filter": {"parameter": "class_", "value": "event-card-details"}
-    },
-    "url": {
-        "tag": "a",
-        "filter": {"parameter": "class_", "value": "event-card-link"}
-    }, 
-    "details": {
-        "container": {
-            "tag": "section",
-            "filter": {"parameter": "class_", "value": "event-card-details"}
-        },
-        "sections": {
-            "tag": "p",
-            "filter": {}
-        }
-    }
-    } 
-}
-query_config_gardenclassroom['request_config']['postcode']=query['postcode']
-query_config_gardenclassroom['request_config']['params']=query['params']
-dset=get_scraped_dset(query_config_gardenclassroom)
-with open("eventbrite_the-garden-classroom-76146096453_results.json", "w") as f:
-    f.write(json.dumps(dset))
+
+

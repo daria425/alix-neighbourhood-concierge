@@ -204,7 +204,10 @@ class DynamicSearch(WebsiteSearch):
         super().__init__(website)
 
     def get_base_url(self):
-        urls = {"the-garden-classroom-76146096453": "https://www.eventbrite.co.uk/o/the-garden-classroom-76146096453"}
+        urls = {"the-garden-classroom-76146096453": "https://www.eventbrite.co.uk/o/the-garden-classroom-76146096453",
+                "praxis-17432513338":"https://www.eventbrite.co.uk/o/praxis-17432513338"
+                }
+        
         return urls.get(self.website, "")
 
 
@@ -227,15 +230,6 @@ class DynamicSearch(WebsiteSearch):
                 }
             finally:
                 browser.close()
-
-locator_config={
-    "selector":"h3.Typography_root__487rx"}
-# organizer_id="the-garden-classroom-76146096453"
-# searcher=DynamicSearch(website="eventbrite")
-# url=searcher.create_request_url(organizer_id)
-# html=searcher.run_search(url, locator_config)
-# with open("eventbrite_html.html", "w") as f:
-#     f.write(html['content'])
 class TavilySearch(APIWebSearch):
     """
     A concrete implementation of the Search class for the Tavily API.
