@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from app.routes.events import router as event_router
+from app.routes import events
 app=FastAPI()
 
 @app.get("/")
 def root():
     return {"message":"Service is up!"}
 
-app.include_router(router=event_router, prefix="/events")
+app.include_router(router=events.router, prefix="/events")
