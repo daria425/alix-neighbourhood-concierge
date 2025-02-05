@@ -3,8 +3,8 @@ from app.core.read_search_results import SearchResultReader
 from app.core.search import HTMLSearch, TavilySearch, DynamicSearch
 from app.utils.utils import validate_query, get_search_api_keys, remove_duplicates
 from typing import List
-
-def get_scraped_dset(query: dict) -> List[dict]:
+import asyncio
+async def get_scraped_dset(query: dict) -> List[dict]:
     validate_query(query, required_keys=["request_config", "page_content_config"])
     request_config=query['request_config']
     page_content_config=query['page_content_config']
@@ -18,7 +18,7 @@ def get_scraped_dset(query: dict) -> List[dict]:
         request_config.get("params", {}),
     )
     if "locator" in page_content_config:
-        response = searcher.run_search(url, locator_config=page_content_config['locator'])
+        response = await searcher.run_search(url, locator_config=page_content_config['locator']) # will use playwright so await by default
     else: 
         response=searcher.run_search(url)
     if response.get("error") or not response.get("content"):
@@ -26,7 +26,7 @@ def get_scraped_dset(query: dict) -> List[dict]:
     event_metadata = reader.get_event_metadata(content=response['content'], include_event_details=request_config['include_event_details'])
     print(len(event_metadata), request_config['website'])
     if not any('event_details' in event_metadata_dict for event_metadata_dict in event_metadata):
-        event_detail_html_list = searcher.fetch_event_details(event_metadata)
+        event_detail_html_list = await searcher.fetch_event_details(event_metadata)
         event_details = [reader.get_event_detail(d) for d in event_detail_html_list]
         event_details_map = {detail["event_id"]: detail for detail in event_details}
         for event in event_metadata:

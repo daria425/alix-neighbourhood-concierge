@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import requests
 from typing import List
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
+import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import logging
 
@@ -87,7 +88,7 @@ class WebsiteSearch(ABC):
         )
 
     @abstractmethod
-    def run_search(self, url):
+    async def run_search(self, url):
         """
         Executes a search request with a given url using either requests or Playwright
         """
@@ -101,7 +102,7 @@ class WebsiteSearch(ABC):
     def create_request_url(self, *args, **kwargs):
         return self._modify_url(*args, **kwargs)
 
-    def _fetch_event(self, event: str) -> dict:
+    async def _fetch_event(self, event: str) -> dict:
         """
         Fetches HTML content for an individual event.
 
@@ -120,9 +121,10 @@ class WebsiteSearch(ABC):
         event_id = event.get("event_id")
         if not url or not event_id:
             return {"error": "No URL/event id provided"}
-
-        response = self.run_search(url, kwargs={})
-
+        if asyncio.iscoroutinefunction(self.run_search):
+            response=await self.run_search(url, kwargs={})
+        else:
+            response = self.run_search(url, kwargs={})
         if response.get("content"):
             return {"content": response["content"], "event_id": event_id}
         status_code = response.get("status_code", "Unknown")
@@ -131,10 +133,16 @@ class WebsiteSearch(ABC):
         )
 
         return {"content": "", "event_id": event_id}
+    
+    def _fetch_event_sync(self, event: str)->dict:
+        """Sync version of `_fetch_event()` for use with `run_in_executor`."""
+        return asyncio.run(self._fetch_event(event)) 
 
-    def fetch_event_details(self, event_metadata: List[dict]):
+
+
+    async def fetch_event_details(self, event_metadata: List[dict]):
         """
-        Fetches detailed HTML content for a list of events concurrently.
+        Fetches detailed HTML content for a list of events concurrently (handles async/sync methods).
 
         Args:
         ------
@@ -144,11 +152,16 @@ class WebsiteSearch(ABC):
         --------
         List[dict]: A list of responses from the `url` of the events.
         """
-        with ThreadPoolExecutor() as executor:
-            futures = [
-                executor.submit(self._fetch_event, event) for event in event_metadata
-            ]
-            return [future.result() for future in futures]
+        if asyncio.iscoroutinefunction(self.run_search):
+            print("Running async run_search")
+            tasks = [self._fetch_event(event) for event in event_metadata]
+            return await asyncio.gather(*tasks)
+        else:
+            print("Running sync run_search")
+            loop = asyncio.get_running_loop()
+            with ThreadPoolExecutor() as executor:
+                tasks = [loop.run_in_executor(executor, self._fetch_event_sync, event) for event in event_metadata]  # Use a sync version
+            return await asyncio.gather(*tasks)
 
 
 class HTMLSearch(WebsiteSearch):
@@ -212,17 +225,17 @@ class DynamicSearch(WebsiteSearch):
         return urls.get(self.website, "")
 
 
-    def run_search(self, url: str, locator_config: dict):
+    async def run_search(self, url: str, locator_config: dict):
         TIMEOUT=60000
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, wait_until="networkidle")
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            await page.goto(url, wait_until="networkidle")
             try:
                 locator_str=locator_config['selector']
                 locator = page.locator(locator_str).first
-                locator.wait_for(state="attached", timeout=TIMEOUT)
-                content = page.content()
+                await locator.wait_for(state="attached", timeout=TIMEOUT)
+                content = await page.content()
                 return {"content": content}
             except Exception as err:
                 logging.exception(f"Unexpected error for {url}: {err}")
@@ -231,7 +244,7 @@ class DynamicSearch(WebsiteSearch):
                     "status_code": None,
                 }
             finally:
-                browser.close()
+                await browser.close()
 class TavilySearch(APIWebSearch):
     """
     A concrete implementation of the Search class for the Tavily API.
