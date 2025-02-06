@@ -1,6 +1,7 @@
 
 from app.core.get_data import get_tavily_dset, get_scraped_dset
 from app.db.database_service import EventSearchConfigService
+from app.utils.utils import convert_events_to_model
 from itertools import chain
 import asyncio
 from dotenv import load_dotenv
@@ -23,5 +24,6 @@ async def run_scraping_pipeline(query:dict):
         async_tasks.append(get_scraped_dset(config))
     scraped_data_list = await asyncio.gather(*async_tasks)
     tavily_results=get_tavily_dset(query)
-    final_list=list(chain.from_iterable(scraped_data_list))+tavily_results
+    event_list=list(chain.from_iterable(scraped_data_list))+tavily_results
+    final_list=convert_events_to_model(event_list)
     return final_list

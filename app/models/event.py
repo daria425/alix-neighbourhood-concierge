@@ -3,7 +3,7 @@ from typing import Optional, List
 
 class EventDetailSection(BaseModel):
     content: str 
-    links:List[str]
+    links:List[Optional[str]]
 
 class EventDetails(BaseModel):
     event_id:str
@@ -16,6 +16,6 @@ class Event(BaseModel):
     event_id: str
     domain: str
     timestamp: str
-    event_details: Optional[EventDetails] = None
+    event_detail: Optional[EventDetails] = None
     errors:Optional[str]=None
 

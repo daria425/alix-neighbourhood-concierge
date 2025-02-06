@@ -3,6 +3,8 @@ import hashlib
 from dotenv import load_dotenv
 from typing import List
 from datetime import datetime, timezone
+from app.models.event import Event
+from typing import List
 
 load_dotenv()
 
@@ -72,3 +74,11 @@ def remove_duplicates(dicts:list, key:str):
             unique_dicts.append(dict)
     return unique_dicts
 
+def convert_events_to_model(event_list:List[dict])->List[Event]:
+    processed_event_list=[Event(**event) for event in event_list]
+    return processed_event_list
+
+def remove_unicode_chars(text:str):
+    if text:
+        return text.encode("ascii", "ignore").decode("ascii")
+    return ""

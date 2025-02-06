@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from app.utils.utils import format_timestamp, generate_event_id
+from app.utils.utils import format_timestamp, generate_event_id, remove_unicode_chars
 from typing import List
 
 class HTMLReader:
@@ -19,7 +19,10 @@ class HTMLReader:
             filter_param = config["filter"].get("parameter", "class_")
             filter_value = config["filter"].get("value", "")
             element = result.find(tag, **{filter_param: filter_value})
-        return element.get_text(strip=True) if element else ""
+            text= element.get_text(strip=True) if element else ""
+            text=remove_unicode_chars(text)
+            return text
+
 
     def extract_url(self, result, config):
         """Extract URL using find() or select_one() if CSS selector is provided."""
@@ -139,8 +142,8 @@ class HTMLReader:
                     info_containers = details_container.find_all(section_tag)
                 for section in info_containers:
                     text_content = section.get_text(strip=True)
+                    text_content = remove_unicode_chars(text_content)
                     links = [link.get("href") for link in section.find_all("a")]
                     detail_sections.append({"content": text_content, "links": links})
-
         event_details["sections"] = detail_sections
         return event_details

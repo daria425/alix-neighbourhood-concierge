@@ -1,4 +1,7 @@
 from app.db.database_connection import db_connection
+from app.models.event import Event
+from typing import List
+
 import logging
 class DatabaseService:
     """Base class to manage MongoDB collection"""
@@ -29,5 +32,28 @@ class EventSearchConfigService(DatabaseService):
         except Exception as e:
             logging.error(f"An error occurred retrieving configuration for postcode {postcode}:{e}")
             return None
+
+
+class EventDataService(DatabaseService):
+    def __init__(self):
+        super().__init__("events")
+        
+    async def bulk_import_events(self,event_list:List[Event])->dict:
+        if not self.collection:
+            await self.init_collection()
+        new_event_ids=[event.event_id for event in event_list]
+        existing_ids=await self.collection.distinct("event_id", {"event_id": {"$in": new_event_ids }})
+        new_events=[event for event in event_list if event.event_id not in existing_ids]
+        if not new_events:
+                return {"message": "No new events to insert."}
+        try: 
+            event_dicts=[event.model_dump(by_alias=True) for event in new_events]
+            insert_result=await self.collection.insert_many(event_dicts)
+            inserted_ids=insert_result.inserted_ids
+            message=f"Successfully imported {len(inserted_ids)} events"
+            return {"message":message}
+        except Exception as e:
+            return {"message":f"Error importing events: {e}"}
+
 
 
