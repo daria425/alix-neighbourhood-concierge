@@ -2,7 +2,7 @@ from response_generator import ResponseGenerator
 from vertexai.generative_models import FunctionDeclaration, Tool, GenerationResponse, ToolConfig
 from datetime import datetime
 from abc import ABC, abstractmethod
-from app.core.agent_config import AgentConfig
+from llm_enrichment_service.agent_config import AgentConfig
 import logging
 class Agent(ABC):
     """
