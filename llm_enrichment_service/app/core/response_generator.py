@@ -1,5 +1,5 @@
 from vertexai.generative_models import GenerationResponse, ToolConfig
-from model_factory import ModelFactoryProvider
+from app.core.model_factory import ModelFactoryProvider
 from typing import List, Any
 import logging
 class ResponseGenerator:

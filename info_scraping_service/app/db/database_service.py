@@ -20,7 +20,7 @@ class EventSearchConfigService(DatabaseService):
     
     async def get_config(self,postcode:str)->dict|None:
         """Retrieve website search configurations for a specific postcode."""
-        if not self.collection:
+        if self.collection is None:
             await self.init_collection()
         try:
             config = await self.collection.find_one({"postcode": postcode})
@@ -39,7 +39,7 @@ class EventDataService(DatabaseService):
         super().__init__("events")
         
     async def bulk_import_events(self,event_list:List[Event])->dict:
-        if not self.collection:
+        if self.collection is None:
             await self.init_collection()
         new_event_ids=[event.event_id for event in event_list]
         existing_ids=await self.collection.distinct("event_id", {"event_id": {"$in": new_event_ids }})

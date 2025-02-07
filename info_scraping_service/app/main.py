@@ -16,7 +16,7 @@ app=FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def root():
-    return {"message":"Service is up!"}
+    return {"message":"Scraping service is up!"}
 
 
 

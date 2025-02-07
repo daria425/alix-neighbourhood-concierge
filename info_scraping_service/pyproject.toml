@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "alix-neighbourhood-concierge"
+name = "info-scraping-service"
 version = "0.1.0"
 description = ""
 authors = ["daria425 <darianaumova5@gmail.com>"]
-readme = "README.md"
+readme = ""
 
 [tool.poetry.dependencies]
 python = "^3.10"
