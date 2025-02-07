@@ -45,13 +45,15 @@ class EventDataService(DatabaseService):
         existing_ids=await self.collection.distinct("event_id", {"event_id": {"$in": new_event_ids }})
         new_events=[event for event in event_list if event.event_id not in existing_ids]
         if not new_events:
-                return {"message": "No new events to insert."}
+                return {"message": "No new events to insert.", "event_dicts":[]}
         try: 
-            event_dicts=[event.model_dump(by_alias=True) for event in new_events]
+            event_dicts = [
+            {**event.model_dump(by_alias=True), "_id": event.event_id} for event in new_events
+        ]
             insert_result=await self.collection.insert_many(event_dicts)
             inserted_ids=insert_result.inserted_ids
             message=f"Successfully imported {len(inserted_ids)} events"
-            return {"message":message}
+            return {"message":message, "event_dicts": event_dicts}
         except Exception as e:
             return {"message":f"Error importing events: {e}"}
 
