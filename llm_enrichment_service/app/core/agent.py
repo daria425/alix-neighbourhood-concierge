@@ -5,8 +5,6 @@ from abc import ABC, abstractmethod
 from app.core.agent_config import AgentConfig
 import logging
 class Agent(ABC):
-    """
-    """
     def __init__(self):
         self.response_generator=ResponseGenerator()
         self.agent_config= AgentConfig()

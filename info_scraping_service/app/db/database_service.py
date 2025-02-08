@@ -45,7 +45,7 @@ class EventDataService(DatabaseService):
         existing_ids=await self.collection.distinct("event_id", {"event_id": {"$in": new_event_ids }})
         new_events=[event for event in event_list if event.event_id not in existing_ids]
         if not new_events:
-                return {"message": "No new events to insert.", "event_dicts":[]}
+                return {"message": "No new events to insert.", "event_dicts":[], "status":200}
         try: 
             event_dicts = [
             {**event.model_dump(by_alias=True), "_id": event.event_id} for event in new_events
@@ -53,9 +53,18 @@ class EventDataService(DatabaseService):
             insert_result=await self.collection.insert_many(event_dicts)
             inserted_ids=insert_result.inserted_ids
             message=f"Successfully imported {len(inserted_ids)} events"
-            return {"message":message, "event_dicts": event_dicts}
+            return {"message":message, "event_dicts": event_dicts, "status":201}
         except Exception as e:
-            return {"message":f"Error importing events: {e}"}
-
+            return {"message":f"Error importing events: {e}", "status":500}
+        
+    async def get_events(self, postcode:str):
+        if self.collection is None:
+            await self.init_collection()
+        cursor=self.collection.find({"postcode":postcode})
+        event_dicts=await cursor.to_list()
+        message=f"Returning {len(event_dicts)} events from database"
+        return {
+            "message":message, "event_dicts":event_dicts, "status":200
+        }
 
 

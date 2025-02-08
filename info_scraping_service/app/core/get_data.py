@@ -25,13 +25,13 @@ async def get_scraped_dset(query: dict) -> List[dict]:
     if response.get("error") or not response.get("content"):
         return []
     event_metadata = reader.get_event_metadata(content=response['content'], include_event_details=request_config['include_event_details'])
+    event_metadata=[{**event, "postcode":request_config['postcode']} for event in event_metadata]
     if request_config['include_event_details']==False:
         event_detail_html_list = await searcher.fetch_event_details(event_metadata)
         event_details = [reader.get_event_detail(d) for d in event_detail_html_list]
         event_details_map = {detail["event_id"]: detail for detail in event_details}
         for event in event_metadata:
             event["event_detail"] = event_details_map.get(event["event_id"], None)
-            event['postcode']=request_config['postcode']
     dset=remove_duplicates(event_metadata, 'event_id')
     return dset
 
@@ -54,5 +54,7 @@ def get_tavily_dset(query: dict) -> List[dict]:
     response = searcher.run_search(request_config)
     search_result_reader = SearchResultReader(search_results=response["results"])
     search_results = search_result_reader.scrape_results()
+    for result in search_results:
+        result['postcode']=query['postcode']
     return search_results
 

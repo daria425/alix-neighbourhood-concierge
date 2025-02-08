@@ -16,6 +16,7 @@ class Event(BaseModel):
     event_id: str
     domain: str
     timestamp: str
+    postcode:str
     event_detail: Optional[EventDetails] = None
     errors:Optional[str]=None
 
