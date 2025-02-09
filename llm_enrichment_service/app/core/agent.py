@@ -1,22 +1,33 @@
-from app.core.response_generator import ResponseGenerator
-from vertexai.generative_models import FunctionDeclaration, Tool, GenerationResponse, ToolConfig
+
+from vertexai.generative_models import FunctionDeclaration, Tool, GenerationResponse, ToolConfig, GenerativeModel
 from datetime import datetime
 from abc import ABC, abstractmethod
 from app.core.agent_config import AgentConfig
+from typing import List, Any
 import logging
+
 class Agent(ABC):
-    def __init__(self):
-        self.response_generator=ResponseGenerator()
-        self.agent_config= AgentConfig()
+    def __init__(self, task):
+        self.agent_config= AgentConfig().get_config(task)
+        self.model=GenerativeModel(model_name=self.agent_config['model_name'], system_instruction=self.agent_config['system_instruction'])  
+    def generate_response(self, contents:List[str], tools:List[Any]=None, tool_config:ToolConfig=None):
+        try:
+            response=self.model.generate_content(contents, tools=tools, tool_config=tool_config)
+            logging.info("Response generated")
+            return response
+        except Exception as e:
+            logging.error(f"Error generating response {e}")
+            raise
+
     @abstractmethod
     def run_task(self):
         raise NotImplementedError("Agent subclasses must implement the `run_task` method")
     
 class AgentWithTools(Agent):
-    def __init__(self):
-        super().__init__()
-    def create_tools(self, function_declarations)->Tool:
-        return Tool(function_declarations=function_declarations)
+    def __init__(self, task):
+        super().__init__(task)
+    def create_tools(self, function_declarations)->List[Tool]:
+        return [Tool(function_declarations=function_declarations)]
     def _get_function_output(self, response: GenerationResponse):
             try:
                 if not response.candidates:
@@ -41,10 +52,8 @@ class AgentWithTools(Agent):
 
 
 class EventInfoExtractionAgent(AgentWithTools):
-    task="EXTRACT_EVENT_INFO"
     def __init__(self):
-        super().__init__()
-        self.config=self.agent_config.get_config(self.task)
+        super().__init__(task="EXTRACT_EVENT_INFO")
     def _create_extract_function_declaration(self)->FunctionDeclaration:
         function = FunctionDeclaration(
         name="get_event_data",
@@ -65,7 +74,7 @@ class EventInfoExtractionAgent(AgentWithTools):
                 "description": {
                     "type": "string",
                     "nullable": True,
-                    "description": "A brief description of the event based on the provided information in the entry or null",
+                    "description": "A 1-2 sentence description of the event based on the provided information in the entry or null",
                 },
                 "date_and_time": {
                     "type": "string",
@@ -104,19 +113,14 @@ class EventInfoExtractionAgent(AgentWithTools):
         return function
     
     def run_task(self, contents:str):
-        model_name=self.config['model_name']
-        system_instruction=self.config['system_instruction']
         extract_function=self._create_extract_function_declaration()
         tools=self.create_tools(function_declarations=[extract_function])
         tool_config=ToolConfig(
         function_calling_config=ToolConfig.FunctionCallingConfig(
-            # ANY mode forces the model to predict only function calls
             mode=ToolConfig.FunctionCallingConfig.Mode.ANY,
-            # Allowed function calls to predict when the mode is ANY. If empty, any  of
-            # the provided function calls will be predicted.
             allowed_function_names=["get_event_data"])
         )
-        res=self.response_generator.generate_response(model_name=model_name, system_instruction=system_instruction, contents=contents, tools=[tools], tool_config=tool_config)
+        res=self.generate_response(contents=contents, tools=tools, tool_config=tool_config)
         output=self._get_function_output(res)
         return output
     
