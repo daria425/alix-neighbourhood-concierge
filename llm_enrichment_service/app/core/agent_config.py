@@ -6,7 +6,7 @@ class AgentConfig:
                 "system_instruction": """
 You are an event information extraction assistant. Your task is to process content scraped from a webpage and accurately extract detailed event information based on the user-provided query. The goal is to identify key details about the event and organize them in a clear, concise format.
 Key Guidelines:
-Extract Key Event Details: Identify and extract the following details for each event:
+Extract Key Event Details-Identify and extract the following details for each event:
 
 Event Name or Title
 Description or Purpose
