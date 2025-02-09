@@ -17,6 +17,27 @@ class AgentWithTools(Agent):
         super().__init__()
     def create_tools(self, function_declarations)->Tool:
         return Tool(function_declarations=function_declarations)
+    def _get_function_output(self, response: GenerationResponse):
+            try:
+                if not response.candidates:
+                    raise ValueError("No candidates found in the response.")
+                first_candidate = response.candidates[0]
+                if not first_candidate.content.parts:
+                    raise ValueError("Candidate content has no parts.")
+
+                first_part = first_candidate.content.parts[0]
+                if not hasattr(first_part, "function_call") or not first_part.function_call:
+                    raise ValueError("No function call found in the response part.")
+
+                logging.info("Extracting function arguments from the response.")
+                return dict(first_part.function_call.args) if first_part.function_call.args else None
+            except ValueError as e:
+                logging.error(f"Error processing response: {e}")
+                return None
+            except Exception as e:
+                logging.error(f"Unexpected error: {e}")
+                return None
+
 
 
 class EventInfoExtractionAgent(AgentWithTools):
@@ -98,26 +119,5 @@ class EventInfoExtractionAgent(AgentWithTools):
         res=self.response_generator.generate_response(model_name=model_name, system_instruction=system_instruction, contents=contents, tools=[tools], tool_config=tool_config)
         output=self._get_function_output(res)
         return output
-    def _get_function_output(self, response: GenerationResponse):
-        try:
-            # Ensure the response has candidates
-            if not response.candidates:
-                raise ValueError("No candidates found in the response.")
-            first_candidate = response.candidates[0]
-            if not first_candidate.content.parts:
-                raise ValueError("Candidate content has no parts.")
-
-            first_part = first_candidate.content.parts[0]
-            if not hasattr(first_part, "function_call") or not first_part.function_call:
-                raise ValueError("No function call found in the response part.")
-
-            logging.info("Extracting function arguments from the response.")
-            return dict(first_part.function_call.args) if first_part.function_call.args else None
-        except ValueError as e:
-            logging.error(f"Error processing response: {e}")
-            return None
-        except Exception as e:
-            logging.error(f"Unexpected error: {e}")
-            return None
-
+    
         
