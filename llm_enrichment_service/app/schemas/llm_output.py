@@ -8,6 +8,5 @@ class LLM_Output(BaseModel):
     location:Optional[str]=None
     cost: Optional[str]=None
     booking_details:Optional[str]=None
-    url:str=Field(...)
     is_within_2_weeks: Optional[bool]=None
     

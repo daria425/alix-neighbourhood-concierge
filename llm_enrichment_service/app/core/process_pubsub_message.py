@@ -1,8 +1,12 @@
 from app.core.agent import EventInfoExtractionAgent
 from app.db.database_service import EventDataService
 from app.schemas.pubsub_message import PubSubMessage
+from app.schemas.llm_output import LLM_Output
+import logging
 import json
 import base64
+
+logging.basicConfig(level=logging.INFO) 
 
 async def process_event(event:dict, event_data_service: EventDataService, agent: EventInfoExtractionAgent):
     event_str=f"""
@@ -13,7 +17,9 @@ async def process_event(event:dict, event_data_service: EventDataService, agent:
     END ENTRY
     """
     llm_output=agent.run_task(contents=event_str)
+    logging.info(f"LLM output: {llm_output}")
     if llm_output is not None:
+        llm_output=LLM_Output(**llm_output)
         await event_data_service.update_event_with_llm_output(event['event_id'], llm_output)
 
 async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_service: EventDataService, agent: EventInfoExtractionAgent):

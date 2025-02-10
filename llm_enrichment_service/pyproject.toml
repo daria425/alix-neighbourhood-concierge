@@ -16,6 +16,9 @@ motor = "^3.7.0"
 pytest = "^8.3.4"
 protobuf = "^5.29.3"
 pytest-asyncio = "^0.25.3"
+requests = "^2.32.3"
+playwright = "^1.50.0"
+beautifulsoup4 = "^4.13.3"
 
 
 [build-system]

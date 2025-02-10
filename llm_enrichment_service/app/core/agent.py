@@ -96,11 +96,6 @@ class EventInfoExtractionAgent(AgentWithTools):
                     "nullable": True,
                     "description": "A link to book the event or get additional details, if available or null",
                 },
-                "url": {
-                    "type": "string",
-                    "nullable":False,
-                    "description": "Link to the original webpage containing the event details or null",
-                },
                 "is_within_2_weeks":{
                     "type":"boolean", 
                     "nullable":False,

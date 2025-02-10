@@ -10,7 +10,7 @@ async def lifespan(app:FastAPI):
     yield
     await db_connection.close()
     
-app=FastAPI()
+app=FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def root():

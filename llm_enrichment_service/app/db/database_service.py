@@ -1,5 +1,6 @@
 import logging
 from app.db.database_connection import db_connection
+from app.schemas.llm_output import LLM_Output
 # from dotenv import load_dotenv
 # load_dotenv()
 
@@ -30,10 +31,11 @@ class EventDataService(DatabaseService):
             logging.error(f"An error occurred getting events:{e}")
 
     
-    async def update_event_with_llm_output(self, event_id:str, llm_output:dict):
+    async def update_event_with_llm_output(self, event_id:str, llm_output:LLM_Output):
         if self.collection is None:
             await self.init_collection()
         try:
+            llm_output=llm_output.model_dump(by_alias=True)
             await self.collection.update_one({"_id":event_id, "llm_output":{"$exists":False}}, {"$set":{"llm_output": llm_output}})
         except Exception as e:
             logging.error(f"An error occurred updating events:{e}")

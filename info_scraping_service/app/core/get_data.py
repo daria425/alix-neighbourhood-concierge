@@ -1,8 +1,6 @@
 from app.core.read_html import HTMLReader
-from app.core.read_search_results import SearchResultReader
-from app.core.search import HTMLSearch, TavilySearch, DynamicSearch
-from app.models.event import Event
-from app.utils.utils import validate_query, get_search_api_keys, remove_duplicates
+from app.core.search import HTMLSearch, DynamicSearch
+from app.utils.utils import validate_query, remove_duplicates
 from typing import List
 
 async def get_scraped_dset(query: dict) -> List[dict]:
@@ -35,26 +33,4 @@ async def get_scraped_dset(query: dict) -> List[dict]:
     dset=remove_duplicates(event_metadata, 'event_id')
     return dset
 
-def get_tavily_dset(query: dict) -> List[dict]:
-    api_keys = get_search_api_keys()
-    validate_query(query, required_keys=["postcode"])
-    searcher = TavilySearch(api_key=api_keys["tavily"])
-    search_query = f"{query['postcode']} events"
-    request_config = searcher.create_search_request(
-        search_query,
-        {
-            "exclude_domains": [
-                "wherecanwego.com",
-                "peabody.org.uk",
-                "www.flightradar24.com",
-            ],
-            "limit": 10,
-        },
-    )
-    response = searcher.run_search(request_config)
-    search_result_reader = SearchResultReader(search_results=response["results"])
-    search_results = search_result_reader.scrape_results()
-    for result in search_results:
-        result['postcode']=query['postcode']
-    return search_results
 
