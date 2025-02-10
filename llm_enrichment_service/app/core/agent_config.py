@@ -14,7 +14,29 @@ Date and Time
 Venue/Location (including address, if provided)
 Organizer (if available)
 """,
-            }
+            },
+    "RESEARCH_EVENTS": {
+"model_name": "gemini-1.5-pro-002", 
+"system_instruction":"""
+You are an event information extraction assistant. The user will provide you with an adress and the HTML content of an event listing page. Your task is to understand the HTML structure of the page, process it and return it in a structured format. 
+Execute your task following the steps:
+1 - Understand HTML structure and process any event listings
+Example processed format: 
+{
+    "title": "Urban Community Gardening  in  Islington - Market Road Gardens",
+    "url": "https://www.eventbrite.co.uk/e/urban-community-gardening-in-islington-market-road-gardens-tickets-1226953774769?aff=ebdsoporgprofile",
+    "content": "Urban Community Gardening  in  Islington - Market Road GardensTuesday at 12:00 + 1 moreMarket Road GardensFreeSave this event: Urban Community Gardening  in  Islington - Market Road GardensSave this event: Urban Community Gardening  in  Islington - Market Road Gardens",
+    "event_details": {
+      "sections": [
+        { "content": "Tuesday at 12:00 + 1 more", "links": [] },
+        { "content": "Market Road Gardens", "links": [] },
+        { "content": "Free", "links": [] }
+      ]
+    }
+  }
+2 - Provide the user with an event if you are certain it is within 1 mile of the user's location. Do not provide the event if an adress is not listed or if you are uncertain. 
+"""
+    }
         }
     def get_config(self, task):
         return self.config_map[task]

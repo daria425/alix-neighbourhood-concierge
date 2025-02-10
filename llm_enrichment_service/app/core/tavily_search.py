@@ -8,7 +8,7 @@ class TavilySearch:
     base_url= "https://api.tavily.com/search"
     api_key=tavily_api_key
 
-    def run_search(self, request_body: dict, kwargs=None):
+    def run_search(self, query:str, kwargs=None):
         """
         Executes a search request.
 
@@ -29,6 +29,7 @@ class TavilySearch:
         """
         if kwargs is None:
             kwargs = {}
+        request_body=self.create_search_request(query)
         try:
             response = requests.post(
                 self.base_url,
@@ -82,3 +83,6 @@ class TavilySearch:
             "api_key":self.api_key
         }
         return request_body
+    
+res=TavilySearch().run_search("London events")
+print(res)

@@ -6,10 +6,6 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import logging
 
-
-
-
-
 class WebsiteSearch(ABC):
     def __init__(self, website: str):
         self.website = website
