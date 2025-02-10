@@ -1,6 +1,5 @@
 .env
 __pycache__
 data/
-tests/
 *.html
 *_cache
