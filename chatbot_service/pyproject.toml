@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "chatbot-service"
+version = "0.1.0"
+description = ""
+authors = ["daria425 <darianaumova5@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+motor = "^3.7.0"
+python-dotenv = "^1.0.1"
+pandas = "^2.2.3"
+pydantic = "^2.10.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

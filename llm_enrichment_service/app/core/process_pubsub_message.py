@@ -32,6 +32,7 @@ async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_servi
         if events:
             for event in events:
                 await process_event(event, event_data_service, agent)
+            logging.info("Processed all events")
 
 
 

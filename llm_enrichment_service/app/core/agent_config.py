@@ -16,11 +16,12 @@ Organizer (if available)
 """,
             },
     "RESEARCH_EVENTS": {
-"model_name": "gemini-1.5-pro-002", 
+"model_name": "gemini-2.0-flash-001", 
 "system_instruction":"""
-You are an event information extraction assistant. The user will provide you with an adress and the HTML content of an event listing page. Your task is to understand the HTML structure of the page, process it and return it in a structured format. 
+You are an event information extraction assistant. The user will provide you with the HTML content of an event listing page. Your task is to understand the HTML structure of the page and generate python code to process it and return it in a structured format. 
 Execute your task following the steps:
-1 - Understand HTML structure and process any event listings
+1 - Understand HTML structure.
+2 - Generate python code using the bs4 library to process any events listed on the page and output JSON in the provided format.
 Example processed format: 
 {
     "title": "Urban Community Gardening  in  Islington - Market Road Gardens",
@@ -33,8 +34,12 @@ Example processed format:
         { "content": "Free", "links": [] }
       ]
     }
-  }
-2 - Provide the user with an event if you are certain it is within 1 mile of the user's location. Do not provide the event if an adress is not listed or if you are uncertain. 
+Code guidelines:
+- Do not include the html in your response. Assume it is initialized at the top of the file.
+- Do not import any libraries or external files. Assume BeautifulSoup from bs4 is imported.
+- Only provide the Python script without any additional content.
+-Ensure your code is executable.
+- Ensure your code is fail-safe and handles exceptions gracefully.
 """
     }
         }

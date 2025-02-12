@@ -216,7 +216,7 @@ class EventResearchAgent(AgentWithTools):
                         },
                     }
                 },
-                "required": ["events"],
+                 "required": ["events"],
             },
         )
         return function
@@ -230,8 +230,9 @@ class EventResearchAgent(AgentWithTools):
             )
         )
         res = self.generate_response(
-            contents=contents, tools=tools, tool_config=tool_config
+            contents=contents, tools=None, 
         )
+        print(res)
         output = self._get_function_output(res)
         return output
 
