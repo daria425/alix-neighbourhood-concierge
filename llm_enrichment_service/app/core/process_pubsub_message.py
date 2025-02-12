@@ -3,6 +3,7 @@ from app.db.database_service import EventDataService
 from app.schemas.pubsub_message import PubSubMessage
 from app.schemas.llm_output import LLM_Output
 import logging
+import asyncio
 import json
 import base64
 
@@ -31,8 +32,10 @@ async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_servi
         events=decoded_data.get("events", None)
         if events:
             for event in events:
+                logging.info(f"Processing event {event['title']}")
                 await process_event(event, event_data_service, agent)
-            logging.info("Processed all events")
+            logging.info(f"Processed all {len(events)} events")
+
 
 
 

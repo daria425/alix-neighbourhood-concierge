@@ -156,7 +156,8 @@ class EventInfoExtractionAgent(AgentWithTools):
         )
         output = self._get_function_output(res)
         return output
-
+    
+    
 
 class EventResearchAgent(AgentWithTools):
     def __init__(self):
