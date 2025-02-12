@@ -20,6 +20,7 @@ requests = "^2.32.3"
 playwright = "^1.50.0"
 beautifulsoup4 = "^4.13.3"
 playwright-stealth = "^1.0.6"
+google-cloud-storage = "^2.14.0"
 
 
 [build-system]

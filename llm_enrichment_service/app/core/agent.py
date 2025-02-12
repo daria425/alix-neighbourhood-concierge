@@ -5,10 +5,12 @@ from vertexai.generative_models import (
     ToolConfig,
     GenerativeModel,
 )
+from vertexai.batch_prediction import BatchPredictionJob
 from datetime import datetime
 from abc import ABC, abstractmethod
 from app.core.agent_config import AgentConfig
 from typing import List, Any
+import time
 import logging
 
 
@@ -19,6 +21,26 @@ class Agent(ABC):
             model_name=self.agent_config["model_name"],
             system_instruction=self.agent_config["system_instruction"],
         )
+
+    def create_batch_prediction_job(self, input_dataset: str, output_uri_prefix: str):
+        batch_prediction_job = BatchPredictionJob.submit(
+            source_model=self.model._model_name,
+            input_dataset=input_dataset,
+            output_uri_prefix=output_uri_prefix,
+        )
+        while not batch_prediction_job.has_ended:
+            time.sleep(5)
+            logging.info("Job in progress...")
+            batch_prediction_job.refresh()
+        if batch_prediction_job.has_succeeded:
+            logging.info("Job succeeded!")
+        else:
+            logging.error("An error occurred in batch prediction job")
+        return {
+            "job_name": batch_prediction_job.resource_name,
+            "status": "success" if batch_prediction_job.has_succeeded else "failed",
+            "output_uri": batch_prediction_job.output_location,
+        }
 
     def generate_response(
         self,
@@ -156,8 +178,100 @@ class EventInfoExtractionAgent(AgentWithTools):
         )
         output = self._get_function_output(res)
         return output
-    
-    
+
+    def create_batch_input_dataset(self, content: str):
+        json_line = {
+            "request": {
+                "contents": content,
+                "system_instruction": {
+                    "parts": {
+                        "text": """
+You are an event information extraction assistant. Your task is to process content scraped from a webpage and accurately extract detailed event information based on the user-provided query. The goal is to identify key details about the event and organize them in a clear, concise format.
+Key Guidelines:
+Extract Key Event Details-Identify and extract the following details for each event:
+
+Event Name or Title
+Description or Purpose
+Date and Time
+Venue/Location (including address, if provided)
+Organizer (if available)
+"""
+                    }
+                },
+                "tools": [
+                    {
+                        "function_declarations": [
+                            {
+                                "name": "get_event_data",
+                                "description": "Extract and structure event information from a given entry",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "tag": {
+                                            "type": "string",
+                                            "nullable": False,
+                                            "description": "A category tag for the event, must be one from the provided list: Arts, Children's Channel, Community Support, Festive, Health & Sport, Music, Playtime, Skill & Professional Development, Social, Workshop",
+                                        },
+                                        "event_name": {
+                                            "type": "string",
+                                            "nullable": False,
+                                            "description": "Title or name of the event",
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "nullable": True,
+                                            "description": "A 1-2 sentence description of the event based on the provided information in the entry or null",
+                                        },
+                                        "date_and_time": {
+                                            "type": "string",
+                                            "nullable": True,
+                                            "description": "Date and time when the event is scheduled to occur or null",
+                                        },
+                                        "location": {
+                                            "type": "string",
+                                            "nullable": True,
+                                            "description": "Venue or address where the event will take place or null",
+                                        },
+                                        "cost": {
+                                            "type": "string",
+                                            "nullable": True,
+                                            "description": "The cost of the event, if available or null",
+                                        },
+                                        "booking_details": {
+                                            "type": "string",
+                                            "nullable": True,
+                                            "description": "A link to book the event or get additional details, if available or null",
+                                        },
+                                        "is_within_2_weeks": {
+                                            "type": "boolean",
+                                            "nullable": False,
+                                            "description": f"True if date and time of event is within 2 weeks of {datetime.now().strftime('%d %b %Y')}. False otherwise",
+                                        },
+                                    },
+                                    "required": [
+                                        "tag",
+                                        "event_name",
+                                        "description",
+                                        "date_and_time",
+                                        "location",
+                                        "cost",
+                                        "booking_details",
+                                        "is_within_2_weeks",
+                                    ],
+                                },
+                            }
+                        ]
+                    }
+                ],
+                "tool_config": {
+                    "function_calling_config": {
+                        "mode": "any",
+                        "allowed_function_names": "get_event_data",
+                    }
+                },
+            }
+        }
+
 
 class EventResearchAgent(AgentWithTools):
     def __init__(self):
@@ -206,7 +320,6 @@ class EventResearchAgent(AgentWithTools):
                                                         },
                                                     },
                                                 },
-
                                             },
                                         }
                                     },
@@ -217,13 +330,14 @@ class EventResearchAgent(AgentWithTools):
                         },
                     }
                 },
-                 "required": ["events"],
+                "required": ["events"],
             },
         )
         return function
-    def run_task(self, contents:str):
-        research_function=self._create_event_research_function_declaration()
-        tools=self.create_tools(function_declarations=[research_function])
+
+    def run_task(self, contents: str):
+        research_function = self._create_event_research_function_declaration()
+        tools = self.create_tools(function_declarations=[research_function])
         tool_config = ToolConfig(
             function_calling_config=ToolConfig.FunctionCallingConfig(
                 mode=ToolConfig.FunctionCallingConfig.Mode.ANY,
@@ -231,10 +345,9 @@ class EventResearchAgent(AgentWithTools):
             )
         )
         res = self.generate_response(
-            contents=contents, tools=None, 
+            contents=contents,
+            tools=None,
         )
         print(res)
         output = self._get_function_output(res)
         return output
-
-
