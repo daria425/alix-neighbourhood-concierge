@@ -2,11 +2,14 @@ from fastapi import APIRouter, Depends
 from app.dependencies.publisher_service import PublisherService
 from app.core.run_scraping_pipeline import run_scraping_pipeline
 from app.schemas.scrape_request import ScrapeRequestModel
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+pubsub_topic_name=os.getenv("PUBSUB_TOPIC_NAME")
 router=APIRouter()
 
 def get_publisher_service():
-    return PublisherService("enrichment-topic")
+    return PublisherService(pubsub_topic_name)
 
 @router.post("/bulk-import") # TO-DO change path later
 async def bulk_import_events(request_body:ScrapeRequestModel, publisher_service: PublisherService=Depends(get_publisher_service))->dict:
