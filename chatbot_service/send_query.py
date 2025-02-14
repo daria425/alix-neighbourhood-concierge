@@ -33,9 +33,12 @@ async def send_query(request_body, session_service: SessionService):
         "session_id":session.session_id, 
         "query":request_body['query']
     }
-    requests.post(url=f"{request_base_url}{request_path}", json=json_data)
+    response=requests.post(url=f"{request_base_url}{request_path}", json=json_data)
+    response=response.json()
+    print(response)
+    await db_connection.close()
     return {
-        "session_id":session.session_id
+        "session_id":session.session_id # Send session ID back to client to open the websocket
     }
 
 asyncio.run(send_query(request_body, SessionService()))

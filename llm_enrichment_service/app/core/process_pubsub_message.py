@@ -41,7 +41,8 @@ async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_servi
         session_id=pubsub_data['session_id']
         page=pubsub_data['page']
         processed_events=await process_events(event_data_service, agent, session_id, page)
-        publisher.publish_events(processed_events, session_id)
+        message=publisher.publish_events(processed_events, session_id)
+        print(message)
 
 
 

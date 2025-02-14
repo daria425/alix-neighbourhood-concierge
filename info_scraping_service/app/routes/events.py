@@ -27,7 +27,7 @@ async def scrape_events(request_body:ScrapeRequestModel, publisher_service: Publ
        "page": request_body.query.page 
     }
     publisher_response=publisher_service.publish(pubsub_data)
-    pubsub_message=publisher_response['message']
+    pubsub_message=publisher_response['message'] # {"message": f"Published session info to PubSub", "published_message_id":published_message_id, "status":201}
     return {
         "pubsub_message":pubsub_message
     }
