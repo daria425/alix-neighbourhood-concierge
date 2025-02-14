@@ -1,4 +1,5 @@
 from app.core.agent import EventInfoExtractionAgent
+from app.dependencies.pubsub_publisher import PubSubPublisher
 from app.db.database_service import EventDataService
 from app.schemas.pubsub_message import PubSubMessage
 import logging
@@ -28,10 +29,9 @@ async def process_events(event_data_service: EventDataService, agent: EventInfoE
                 processed_event={**event, "llm_output":{}}
             processed_events.append(processed_event)
         print("PROCESSED EVENTS", processed_events)
-        return processed_events
-    return None
+    return processed_events
 
-async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_service: EventDataService, agent: EventInfoExtractionAgent):
+async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_service: EventDataService, agent: EventInfoExtractionAgent, publisher: PubSubPublisher):
     message=pubsub_message.message
     pubsub_message_data=message.data
     if pubsub_message_data is not None:
@@ -41,7 +41,7 @@ async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_servi
         session_id=pubsub_data['session_id']
         page=pubsub_data['page']
         processed_events=await process_events(event_data_service, agent, session_id, page)
-        return processed_events
+        publisher.publish_events(processed_events, session_id)
 
 
 

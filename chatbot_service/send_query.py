@@ -33,8 +33,9 @@ async def send_query(request_body, session_service: SessionService):
         "session_id":session.session_id, 
         "query":request_body['query']
     }
-    response=requests.post(url=f"{request_base_url}{request_path}", json=json_data)
-    print(response)
-    await db_connection.close()
+    requests.post(url=f"{request_base_url}{request_path}", json=json_data)
+    return {
+        "session_id":session.session_id
+    }
 
 asyncio.run(send_query(request_body, SessionService()))
