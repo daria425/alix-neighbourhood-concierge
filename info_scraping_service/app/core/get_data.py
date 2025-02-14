@@ -7,6 +7,7 @@ async def get_scraped_dset(query: dict) -> List[dict]:
     validate_query(query, required_keys=["request_config", "page_content_config"])
     request_config=query['request_config']
     page_content_config=query['page_content_config']
+    
     if request_config.get("website_type")=="dynamic":
         searcher = DynamicSearch(website=request_config['website'])
     else:
@@ -22,6 +23,7 @@ async def get_scraped_dset(query: dict) -> List[dict]:
         response=searcher.run_search(url)
     if response.get("error") or not response.get("content"):
         return []
+    
     event_metadata = reader.get_event_metadata(content=response['content'], include_event_details=request_config['include_event_details'])
     event_metadata=[{**event, "postcode":request_config['postcode']} for event in event_metadata]
     if request_config['include_event_details']==False:

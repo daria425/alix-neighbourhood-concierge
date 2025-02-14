@@ -1,68 +1,48 @@
-
-from app.dependencies.cloud_storage_service import CloudStorageService
-
-from app.schemas.pubsub_message import PubSubMessage
 from app.core.agent import EventInfoExtractionAgent
-from typing import List
+from app.db.database_service import EventDataService
+from app.schemas.pubsub_message import PubSubMessage
+from app.schemas.llm_output import LLM_Output
 import logging
 import json
 import base64
 
 logging.basicConfig(level=logging.INFO) 
 
-CHUNK_SIZE=20
+async def process_events(event_data_service: EventDataService, agent: EventInfoExtractionAgent, session_id:str, page:int=1, ):
+    events=await event_data_service.get_paginated_events(session_id, page)
+    processed_events=[]
+    print(type(page))
+    if len(events)>0:
+        for event in events:
+            event_str=f"""
+            BEGIN ENTRY
+            -----------
+            {json.dumps(event)}
+            -----------
+            END ENTRY
+            """
+            llm_output=agent.run_task(contents=event_str)
+            logging.info(f"LLM output: {llm_output}")
+            if llm_output is not None:
+                processed_event={**event, "llm_output":llm_output}
+            else:
+                processed_event={**event, "llm_output":{}}
+            processed_events.append(processed_event)
+        print("PROCESSED EVENTS")
+        return processed_events
+    return None
 
-def create_prediction_content(event:dict)->List[dict]:
-    content_line={
-        "role":"user", 
-        "parts":[
-            {
-                "text": f"""
-    BEGIN ENTRY
-    -----------
-    {json.dumps(event)}
-    -----------
-    END ENTRY
-    """
-            }
-        ]
-    }
-    return [content_line]
-    
-    
-
-
-async def process_pubsub_message(pubsub_message: PubSubMessage, cloud_storage_service: CloudStorageService, agent: EventInfoExtractionAgent):
+async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_service: EventDataService, agent: EventInfoExtractionAgent):
     message=pubsub_message.message
     pubsub_message_data=message.data
     if pubsub_message_data is not None:
         decoded_data=base64.b64decode(pubsub_message_data).decode("utf-8")
         decoded_data=json.loads(decoded_data)
-        events=decoded_data.get("events", [])
-     
-        file_uris=[]
-        for i in range(0,len(events), CHUNK_SIZE):
-                chunk=events[i:i+CHUNK_SIZE]
-                filename=f"event_batch_i_{i // CHUNK_SIZE}.jsonl"
-                with open(filename, "w") as f:
-                     for event in chunk:
-                          logging.info(f"Processing event {event['title']}")
-                          content=create_prediction_content(event)
-                          json_line=agent.create_batch_input_dataset(content=content)
-                          f.write(json.dumps(json_line)+"\n")
-                file_uri=cloud_storage_service.upload_file(filename)
-                file_uris.append(file_uri)
-                logging.info(f"Uploaded {filename} -> {file_uri}")
-        return file_uris
-
-
-
-
-            
-            
-
-
-
+        pubsub_data=decoded_data.get("pubsub_data", None)
+        session_id=pubsub_data['session_id']
+        page=pubsub_data['page']
+        processed_events=await process_events(event_data_service, agent, session_id, page)
+        return processed_events
 
 
 

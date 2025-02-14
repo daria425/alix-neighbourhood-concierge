@@ -1,5 +1,6 @@
 from app.db.database_connection import db_connection
 from app.models.event import Event
+from app.models.session import Session
 from typing import List
 
 import logging
@@ -38,24 +39,15 @@ class EventDataService(DatabaseService):
     def __init__(self):
         super().__init__("events")
         
-    async def bulk_import_events(self,event_list:List[Event])->dict:
+    async def import_events(self,event_dicts:dict)->dict:
         if self.collection is None:
             await self.init_collection()
-        new_event_ids=[event.event_id for event in event_list]
-        existing_ids=await self.collection.distinct("event_id", {"event_id": {"$in": new_event_ids }})
-        new_events=[event for event in event_list if event.event_id not in existing_ids]
-        if not new_events:
-                return {"message": "No new events to insert.", "event_dicts":[], "status":200}
         try: 
-            event_dicts = [
-            {**event.model_dump(by_alias=True), "_id": event.event_id} for event in new_events
-        ]
             insert_result=await self.collection.insert_many(event_dicts)
             inserted_ids=insert_result.inserted_ids
-            message=f"Successfully imported {len(inserted_ids)} events"
-            return {"message":message, "event_dicts": event_dicts, "status":201}
+            return {"message":f"Successfully imported {len(inserted_ids)} events",  "status":"success"}
         except Exception as e:
-            return {"message":f"Error importing events: {e}", "status":500}
+            return {"message":f"Error importing events: {e}", "status":"error"}
         
     async def get_events(self, postcode:str):
         if self.collection is None:
@@ -64,7 +56,21 @@ class EventDataService(DatabaseService):
         event_dicts=await cursor.to_list()
         message=f"Returning {len(event_dicts)} events from database"
         return {
-            "message":message, "event_dicts":event_dicts, "status":200
+            "message":message, "event_dicts":event_dicts, "status":"success"
         }
 
 
+class SessionService(DatabaseService):
+    def __init__(self):
+        super().__init__("sessions")
+    
+    async def create_session(self, session:Session)->dict:
+        if self.collection is None:
+            await self.init_collection()
+        try:
+            session={**session.model_dump(by_alias=True), "_id":session.session_id}
+            await self.collection.insert_one(session)
+            return {"status": "success", "message": "Session created"}
+        except Exception as e:
+            logging.error(f"Error creating session: {e}")
+            return {"status": "error", "message": f"Error creating session: {str(e)}"}

@@ -14,14 +14,12 @@ class PublisherService:
         self.topic_path=f"projects/{self.project_id}/topics/{self.topic_name}"
 
 
-    def publish_events(self, event_dicts: List[dict]):
+    def publish(self, pubsub_data):
         try:
-            if len(event_dicts)==0:
-                return {"message": f"No new messages publish to PubSub", "published_message_id":None, "status":200}
-            published_message=json.dumps({"events":event_dicts}).encode("utf-8")
+            published_message=json.dumps({"pubsub_data":pubsub_data}).encode("utf-8")
             future=self.publisher.publish(self.topic_path, published_message)
             published_message_id=future.result()
-            return {"message": f"Published {len(event_dicts)} messages to PubSub", "published_message_id":published_message_id, "status":201}
+            return {"message": f"Published session info to PubSub", "published_message_id":published_message_id, "status":201}
         except Exception as e:
             logging.error(f"An error in PublisherService occurred: {e}")
             return {"message": f"Error publishing to PubSub:{e}", "published_message_id":None, "status":500}

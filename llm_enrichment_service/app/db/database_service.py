@@ -29,8 +29,20 @@ class EventDataService(DatabaseService):
             return events
         except Exception as e:
             logging.error(f"An error occurred getting events:{e}")
+            return []
 
-    
+    async def get_paginated_events(self, session_id:str, page:int, page_size:int=15):
+        if self.collection is None:
+            await self.init_collection()
+        skip=(page-1)*page_size
+        try:
+            cursor=self.collection.find({"session_id":session_id}).skip(skip).limit(page_size)
+            events=await cursor.to_list()
+            return events
+        except Exception as e:
+            logging.error(f"Error finding events:{e}")
+            return []
+
     async def update_event_with_llm_output(self, event_id:str, llm_output:LLM_Output):
         if self.collection is None:
             await self.init_collection()
@@ -39,6 +51,7 @@ class EventDataService(DatabaseService):
             await self.collection.update_one({"_id":event_id, "llm_output":{"$exists":False}}, {"$set":{"llm_output": llm_output}})
         except Exception as e:
             logging.error(f"An error occurred updating events:{e}")
+
 
 
             
