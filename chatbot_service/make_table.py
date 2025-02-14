@@ -12,4 +12,3 @@ async def get_events():
     df=pd.DataFrame(events)
     print(df, df.columns)
 
-asyncio.run(get_events())

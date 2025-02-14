@@ -1,14 +1,13 @@
 from app.core.agent import EventInfoExtractionAgent
 from app.db.database_service import EventDataService
 from app.schemas.pubsub_message import PubSubMessage
-from app.schemas.llm_output import LLM_Output
 import logging
 import json
 import base64
 
 logging.basicConfig(level=logging.INFO) 
 
-async def process_events(event_data_service: EventDataService, agent: EventInfoExtractionAgent, session_id:str, page:int=1, ):
+async def process_events(event_data_service: EventDataService, agent: EventInfoExtractionAgent, session_id:str, page:int=1):
     events=await event_data_service.get_paginated_events(session_id, page)
     processed_events=[]
     print(type(page))
@@ -28,7 +27,7 @@ async def process_events(event_data_service: EventDataService, agent: EventInfoE
             else:
                 processed_event={**event, "llm_output":{}}
             processed_events.append(processed_event)
-        print("PROCESSED EVENTS")
+        print("PROCESSED EVENTS", processed_events)
         return processed_events
     return None
 

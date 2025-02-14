@@ -1,7 +1,4 @@
 from app.db.database_connection import db_connection
-from app.models.event import Event
-from app.models.session import Session
-from typing import List
 
 import logging
 class DatabaseService:
@@ -60,17 +57,4 @@ class EventDataService(DatabaseService):
         }
 
 
-class SessionService(DatabaseService):
-    def __init__(self):
-        super().__init__("sessions")
-    
-    async def create_session(self, session:Session)->dict:
-        if self.collection is None:
-            await self.init_collection()
-        try:
-            session={**session.model_dump(by_alias=True), "_id":session.session_id}
-            await self.collection.insert_one(session)
-            return {"status": "success", "message": "Session created"}
-        except Exception as e:
-            logging.error(f"Error creating session: {e}")
-            return {"status": "error", "message": f"Error creating session: {str(e)}"}
+

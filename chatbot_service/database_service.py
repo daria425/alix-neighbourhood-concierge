@@ -1,6 +1,6 @@
 import logging
 from database_connection import db_connection
-from query import Query
+from session import Session
 class DatabaseService:
     def __init__(self, collection_name:str):
         self.collection_name=collection_name
@@ -12,28 +12,32 @@ class DatabaseService:
         self.collection=db_connection.db[self.collection_name]
 
 
-class EventDataService(DatabaseService):
+class SessionService(DatabaseService):
     def __init__(self):
-        super().__init__("events")
-
-    async def get_events(self, query:Query=None):
+        super().__init__("sessions")
+    
+    async def create_session(self, session:Session)->dict:
         if self.collection is None:
             await self.init_collection()
-        projection={
-            "title":1,
-            "url":1, 
-            "llm_output.tag":1, 
-            "llm_output.description":1, 
-            "llm_output.location":1, 
-            "llm_output.cost":1, 
-            "llm_output.booking_details":1, 
-        }
         try:
-            if query is not None:
-                events=self.collection.find({"postcode": query.postcode}, projection)
-            else:
-                events=self.collection.find({}, projection)
-            events=await events.to_list()
-            return events
+            session={**session.model_dump(by_alias=True), "_id":session.session_id}
+            await self.collection.insert_one(session)
+            return {"status": "success", "message": "Session created"}
         except Exception as e:
-            logging.error(f"An error occurred getting events:{e}")
+            logging.error(f"Error creating session: {e}")
+            return {"status": "error", "message": f"Error creating session: {str(e)}"}
+    async def find_user_session(self, user_id:str):
+        if self.collection is None:
+            await self.init_collection()
+        try:
+            user_session=await self.collection.find_one({"user_id": user_id})
+            if user_session is not None:
+                return Session(**user_session)
+            else:
+                return None
+        except Exception as e:
+            logging.error(f"Error finding user session: {e}")
+            return None
+        
+
+

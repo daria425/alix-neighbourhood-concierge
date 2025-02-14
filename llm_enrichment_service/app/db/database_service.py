@@ -31,7 +31,7 @@ class EventDataService(DatabaseService):
             logging.error(f"An error occurred getting events:{e}")
             return []
 
-    async def get_paginated_events(self, session_id:str, page:int, page_size:int=15):
+    async def get_paginated_events(self, session_id:str, page:int, page_size:int=10):
         if self.collection is None:
             await self.init_collection()
         skip=(page-1)*page_size
