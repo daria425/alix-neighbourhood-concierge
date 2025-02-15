@@ -1,6 +1,6 @@
 import logging
-from database_connection import db_connection
-from session import Session
+from app.db.database_connection import db_connection
+from app.models.session import Session
 class DatabaseService:
     def __init__(self, collection_name:str):
         self.collection_name=collection_name

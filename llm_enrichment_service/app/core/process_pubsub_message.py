@@ -1,5 +1,4 @@
 from app.core.agent import EventInfoExtractionAgent
-from app.dependencies.pubsub_publisher import PubSubPublisher
 from app.db.database_service import EventDataService
 from app.schemas.pubsub_message import PubSubMessage
 import logging
@@ -31,7 +30,7 @@ async def process_events(event_data_service: EventDataService, agent: EventInfoE
         print("PROCESSED EVENTS", processed_events)
     return processed_events
 
-async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_service: EventDataService, agent: EventInfoExtractionAgent, publisher: PubSubPublisher):
+async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_service: EventDataService, agent: EventInfoExtractionAgent):
     message=pubsub_message.message
     pubsub_message_data=message.data
     if pubsub_message_data is not None:
@@ -41,9 +40,7 @@ async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_servi
         session_id=pubsub_data['session_id']
         page=pubsub_data['page']
         processed_events=await process_events(event_data_service, agent, session_id, page)
-        message=publisher.publish_events(processed_events, session_id)
-        print(message)
-
+        print(f"Now we will throw processed events into a DB, they look like: {processed_events}")
 
 
 

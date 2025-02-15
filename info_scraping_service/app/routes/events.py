@@ -22,14 +22,15 @@ async def scrape_events(request_body:ScrapeRequestModel, publisher_service: Publ
         ]
     database_import_message=await event_data_service.import_events(event_dicts)
     logging.info(f"Database message: {database_import_message['message']}")
+
     pubsub_data={
        "session_id":request_body.session_id, 
        "page": request_body.query.page 
     }
-    publisher_response=publisher_service.publish(pubsub_data)
-    pubsub_message=publisher_response['message'] # {"message": f"Published session info to PubSub", "published_message_id":published_message_id, "status":201}
+    publisher_service.publish(pubsub_data)
+     # {"message": f"Published session info to PubSub", "published_message_id":published_message_id, "status":201}
     return {
-        "pubsub_message":pubsub_message
+        "pubsub_message":""# replace with list
     }
 
 
