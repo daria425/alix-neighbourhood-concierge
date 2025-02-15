@@ -42,9 +42,9 @@ class EventDataService(DatabaseService):
         try: 
             insert_result=await self.collection.insert_many(event_dicts)
             inserted_ids=insert_result.inserted_ids
-            return {"message":f"Successfully imported {len(inserted_ids)} events",  "status":"success"}
+            return {"message":f"Successfully imported {len(inserted_ids)} events",  "status":"success", "event_ids":inserted_ids}
         except Exception as e:
-            return {"message":f"Error importing events: {e}", "status":"error"}
+            return {"message":f"Error importing events: {e}", "status":"error", "event_ids":[]}
         
     async def get_events(self, postcode:str):
         if self.collection is None:
@@ -53,7 +53,7 @@ class EventDataService(DatabaseService):
         event_dicts=await cursor.to_list()
         message=f"Returning {len(event_dicts)} events from database"
         return {
-            "message":message, "event_dicts":event_dicts, "status":"success"
+            "message":message, "event_dicts":event_dicts, "status":"success", 
         }
 
 

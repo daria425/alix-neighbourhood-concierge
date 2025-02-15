@@ -19,10 +19,10 @@ class PublisherService:
             published_message=json.dumps({"pubsub_data":pubsub_data}).encode("utf-8")
             future=self.publisher.publish(self.topic_path, published_message)
             published_message_id=future.result()
-            return {"message": f"Published session info to PubSub", "published_message_id":published_message_id, "status":201}
+            return {"message": f"Published session info to PubSub", "published_message_id":published_message_id, "status":"success"}
         except Exception as e:
             logging.error(f"An error in PublisherService occurred: {e}")
-            return {"message": f"Error publishing to PubSub:{e}", "published_message_id":None, "status":500}
+            return {"message": f"Error publishing to PubSub:{e}", "published_message_id":None, "status":"error"}
 
 
 

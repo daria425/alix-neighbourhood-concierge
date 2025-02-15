@@ -39,5 +39,17 @@ class SessionService(DatabaseService):
             logging.error(f"Error finding user session: {e}")
             return None
         
+class EventDataService(DatabaseService):
+    def __init__(self):
+        super().__init__("sessions")
+    
+    async def get_processed_events_by_session(self, session_id):
+        if self.collection is None:
+            await self.init_collection()
+        processed_event_cursor=self.collection.find({"session_id":session_id})
+        processed_events=await processed_event_cursor.to_list()
+        return processed_events
+
+
 
 

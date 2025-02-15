@@ -1,5 +1,4 @@
-import requests
-import os
+import os, requests, logging
 from dotenv import load_dotenv
 from uuid import uuid4
 from app.models.session import Session
@@ -24,4 +23,6 @@ async def send_query(request_body, session_service: SessionService):
     response=requests.post(url=f"{request_base_url}{request_path}", json=json_data)
     response=response.json() 
     print(response)
-    # Start polling here
+    return session.session_id
+
+    # Client  will start polling here

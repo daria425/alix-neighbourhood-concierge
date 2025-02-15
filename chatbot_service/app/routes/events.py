@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Query
 from app.core.send_query import send_query
-from app.db.database_service import SessionService
+from app.db.database_service import SessionService, EventDataService
 from app.schemas.request_body import RequestBody
 router=APIRouter()
 
@@ -10,3 +10,14 @@ async def start_scraping(request_body: RequestBody, session_service: SessionServ
     session_id=await send_query(request_body, session_service)
     return session_id
 
+
+@router.get("/status")
+async def get_processing_status(session_id:str, event_data_service:EventDataService=Depends()):
+    processed_events=await event_data_service.get_processed_events_by_session(session_id)
+    all_processed=all(event["status"] == "processed" for event in processed_events)
+    return {
+        "session_id": session_id,
+        "all_processed": all_processed,
+        "remaining_count": sum(1 for event in processed_events if event["status"] != "processed"),
+        "events": processed_events
+    }

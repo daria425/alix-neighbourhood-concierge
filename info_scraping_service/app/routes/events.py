@@ -18,19 +18,20 @@ async def scrape_events(request_body:ScrapeRequestModel, publisher_service: Publ
     query=request_body.query.model_dump(by_alias=True)
     event_list=await run_scraping_pipeline(query)
     event_dicts = [
-            {**event.model_dump(by_alias=True), "_id":event.event_id, "session_id":request_body.session_id} for event in event_list
+            {**event.model_dump(by_alias=True), "_id":event.event_id, "session_id":request_body.session_id, "status":"pending"} for event in event_list
         ]
     database_import_message=await event_data_service.import_events(event_dicts)
     logging.info(f"Database message: {database_import_message['message']}")
-
     pubsub_data={
        "session_id":request_body.session_id, 
        "page": request_body.query.page 
     }
-    publisher_service.publish(pubsub_data)
-     # {"message": f"Published session info to PubSub", "published_message_id":published_message_id, "status":201}
+    pubsub_message=publisher_service.publish(pubsub_data)
     return {
-        "pubsub_message":""# replace with list
+        "service_messages":{
+            "pubsub":pubsub_message['message'], 
+            "mongodb":database_import_message['message']
+        },
+        # "event_ids":event_ids# replace with list
     }
-
 

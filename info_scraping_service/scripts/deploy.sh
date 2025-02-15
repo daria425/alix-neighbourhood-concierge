@@ -9,7 +9,7 @@ fi
 GOOGLE_PROJECT_ID="$1"
 
 IMAGE_TAG="europe-west2-docker.pkg.dev/${GOOGLE_PROJECT_ID}/neighbourhood-concierge-scraper/app:latest"
-echo "Deployment starting ❤️‍🔥"
+echo "Deployment of info scraping service starting ❤️‍🔥"
 echo "Here is a cat to keep you company while you wait"
 echo "       \`*-."
 echo "        )  _\`-."

@@ -43,12 +43,12 @@ class EventDataService(DatabaseService):
             logging.error(f"Error finding events:{e}")
             return []
 
-    async def update_event_with_llm_output(self, event_id:str, llm_output:LLM_Output):
+    async def update_event_with_llm_output(self, session_id:str, event_id:str, llm_output:LLM_Output):
         if self.collection is None:
             await self.init_collection()
         try:
             llm_output=llm_output.model_dump(by_alias=True)
-            await self.collection.update_one({"_id":event_id, "llm_output":{"$exists":False}}, {"$set":{"llm_output": llm_output}})
+            await self.collection.update_one({"_id":event_id, "session_id":session_id}, {"$set":{"llm_output": llm_output, "status":"completed"}})
         except Exception as e:
             logging.error(f"An error occurred updating events:{e}")
 
