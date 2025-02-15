@@ -84,5 +84,3 @@ class TavilySearch:
         }
         return request_body
     
-res=TavilySearch().run_search("London events")
-print(res)
