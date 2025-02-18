@@ -43,10 +43,11 @@ class EventDataService(DatabaseService):
     def __init__(self):
         super().__init__("sessions")
     
-    async def get_processed_events_by_session(self, session_id):
+    async def get_processed_events_by_session(self, session_id:str, page:int, page_size:int=10):
         if self.collection is None:
             await self.init_collection()
-        processed_event_cursor=self.collection.find({"session_id":session_id})
+        skip=(page-1)*page_size
+        processed_event_cursor=self.collection.find({"session_id":session_id}).skip(skip).limit(page_size).sort("event_id", 1)
         processed_events=await processed_event_cursor.to_list()
         return processed_events
 

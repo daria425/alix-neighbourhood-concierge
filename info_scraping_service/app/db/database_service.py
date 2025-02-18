@@ -55,6 +55,17 @@ class EventDataService(DatabaseService):
         return {
             "message":message, "event_dicts":event_dicts, "status":"success", 
         }
-
+    
+    async def get_paginated_events(self, session_id:str, page:int, page_size:int=10):
+        if self.collection is None:
+            await self.init_collection()
+        skip=(page-1)*page_size
+        try:
+            cursor=self.collection.find({"session_id":session_id}).skip(skip).limit(page_size)
+            events=await cursor.to_list()
+            return events
+        except Exception as e:
+            logging.error(f"Error finding events:{e}")
+            return []
 
 

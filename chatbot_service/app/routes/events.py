@@ -12,12 +12,13 @@ async def start_scraping(request_body: RequestBody, session_service: SessionServ
 
 
 @router.get("/status")
-async def get_processing_status(session_id:str, event_data_service:EventDataService=Depends()):
+async def get_processing_status(session_id:str, page:int, page_size:int, event_data_service:EventDataService=Depends()): #page & page size to be included in query
+    #Update this to incl page size and page
     processed_events=await event_data_service.get_processed_events_by_session(session_id)
-    all_processed=all(event["status"] == "processed" for event in processed_events)
+    all_processed=all(event["status"] == "completed" for event in processed_events)
     return {
         "session_id": session_id,
         "all_processed": all_processed,
-        "remaining_count": sum(1 for event in processed_events if event["status"] != "processed"),
+        "remaining_count": sum(1 for event in processed_events if event["status"] != "completed"),
         "events": processed_events
     }

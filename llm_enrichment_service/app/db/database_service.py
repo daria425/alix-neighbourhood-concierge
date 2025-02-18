@@ -36,7 +36,7 @@ class EventDataService(DatabaseService):
             await self.init_collection()
         skip=(page-1)*page_size
         try:
-            cursor=self.collection.find({"session_id":session_id}).skip(skip).limit(page_size)
+            cursor=self.collection.find({"session_id":session_id}).skip(skip).limit(page_size).sort("event_id", 1)
             events=await cursor.to_list()
             return events
         except Exception as e:
@@ -47,6 +47,7 @@ class EventDataService(DatabaseService):
         if self.collection is None:
             await self.init_collection()
         try:
+            logging.info("Updating event...")
             llm_output=llm_output.model_dump(by_alias=True)
             await self.collection.update_one({"_id":event_id, "session_id":session_id}, {"$set":{"llm_output": llm_output, "status":"completed"}})
         except Exception as e:

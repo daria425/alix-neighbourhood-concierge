@@ -25,4 +25,4 @@ async def send_query(request_body, session_service: SessionService):
     print(response)
     return session.session_id
 
-    # Client  will start polling here
+    # Client  will start polling once the session id is returned

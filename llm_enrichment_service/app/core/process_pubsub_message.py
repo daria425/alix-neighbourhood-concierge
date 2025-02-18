@@ -21,7 +21,7 @@ async def process_events(event_data_service: EventDataService, agent: EventInfoE
             llm_output=agent.run_task(contents=event_str)
             logging.info(f"LLM output: {llm_output}")
             llm_output = LLM_Output(**(llm_output or {}))  
-            await event_data_service.update_event_with_llm_output(event['event_id'], session_id, llm_output)
+            await event_data_service.update_event_with_llm_output( session_id, event['event_id'],llm_output)
 
 async def process_pubsub_message(pubsub_message: PubSubMessage, event_data_service: EventDataService, agent: EventInfoExtractionAgent):
     message=pubsub_message.message

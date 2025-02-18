@@ -24,14 +24,13 @@ async def scrape_events(request_body:ScrapeRequestModel, publisher_service: Publ
     logging.info(f"Database message: {database_import_message['message']}")
     pubsub_data={
        "session_id":request_body.session_id, 
-       "page": request_body.query.page 
+       "page": request_body.query.page, 
     }
     pubsub_message=publisher_service.publish(pubsub_data)
     return {
         "service_messages":{
             "pubsub":pubsub_message['message'], 
             "mongodb":database_import_message['message']
-        },
-        # "event_ids":event_ids# replace with list
+        }, # response sent back to chatbot service once scraping is complete
     }
 

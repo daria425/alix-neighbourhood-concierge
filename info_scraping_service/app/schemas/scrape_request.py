@@ -7,6 +7,7 @@ class ScrapeRequestQuery(BaseModel):
     page:int
 
 
+
 class ScrapeRequestModel(BaseModel):
     query: ScrapeRequestQuery
     session_id:str
