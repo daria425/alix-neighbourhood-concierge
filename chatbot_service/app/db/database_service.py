@@ -47,7 +47,7 @@ class EventDataService(DatabaseService):
         if self.collection is None:
             await self.init_collection()
         skip=(page-1)*page_size
-        processed_event_cursor=self.collection.find({"session_id":session_id}).skip(skip).limit(page_size).sort("event_id", 1)
+        processed_event_cursor=self.collection.find({"session_id":session_id}).sort("event_id", 1).skip(skip).limit(page_size)
         processed_events=await processed_event_cursor.to_list()
         return processed_events
 

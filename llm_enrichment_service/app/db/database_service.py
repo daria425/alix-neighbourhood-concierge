@@ -36,7 +36,7 @@ class EventDataService(DatabaseService):
             await self.init_collection()
         skip=(page-1)*page_size
         try:
-            cursor=self.collection.find({"session_id":session_id}).skip(skip).limit(page_size).sort("event_id", 1)
+            cursor=self.collection.find({"session_id":session_id}).sort("event_id", 1).skip(skip).limit(page_size)
             events=await cursor.to_list()
             return events
         except Exception as e:
